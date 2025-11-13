@@ -43,3 +43,22 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+
+# Test coverage
+coverage/
+test/coverage/
+
+# Additional Flutter files
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+pubspec.lock
