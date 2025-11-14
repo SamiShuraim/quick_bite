@@ -31,13 +31,13 @@ export const generateAccessToken = (
     type: TOKEN_TYPES.ACCESS,
   };
 
-  const options: SignOptions = {
+  const options = {
     expiresIn: config.jwt.expiresIn,
     issuer: JWT_CONFIG.ISSUER,
     audience: JWT_CONFIG.AUDIENCE,
   };
   
-  return jwt.sign(payload, config.jwt.secret, options);
+  return jwt.sign(payload, config.jwt.secret, options as SignOptions);
 };
 
 /**
@@ -55,13 +55,13 @@ export const generateRefreshToken = (
     type: TOKEN_TYPES.REFRESH,
   };
 
-  const options: SignOptions = {
+  const options = {
     expiresIn: config.jwt.refreshExpiresIn,
     issuer: JWT_CONFIG.ISSUER,
     audience: JWT_CONFIG.AUDIENCE,
   };
   
-  return jwt.sign(payload, config.jwt.refreshSecret, options);
+  return jwt.sign(payload, config.jwt.refreshSecret, options as SignOptions);
 };
 
 /**

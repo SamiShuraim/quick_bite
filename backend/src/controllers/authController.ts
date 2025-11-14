@@ -112,3 +112,71 @@ export const getProfile = asyncHandler(
   }
 );
 
+/**
+ * Verify email with code
+ * POST /api/v1/auth/verify-email
+ */
+export const verifyEmail = asyncHandler(
+  async (req: Request, res: Response): Promise<void> => {
+    const { email, code } = req.body;
+
+    await AuthService.verifyEmail(email, code);
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: 'Email verified successfully',
+    });
+  }
+);
+
+/**
+ * Resend verification code
+ * POST /api/v1/auth/resend-verification
+ */
+export const resendVerification = asyncHandler(
+  async (req: Request, res: Response): Promise<void> => {
+    const { email } = req.body;
+
+    await AuthService.resendVerificationCode(email);
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: 'Verification code sent',
+    });
+  }
+);
+
+/**
+ * Request password reset
+ * POST /api/v1/auth/forgot-password
+ */
+export const forgotPassword = asyncHandler(
+  async (req: Request, res: Response): Promise<void> => {
+    const { email } = req.body;
+
+    await AuthService.requestPasswordReset(email);
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: 'Password reset code sent to your email',
+    });
+  }
+);
+
+/**
+ * Reset password with code
+ * POST /api/v1/auth/reset-password
+ */
+export const resetPassword = asyncHandler(
+  async (req: Request, res: Response): Promise<void> => {
+    const { email, code, newPassword } = req.body;
+
+    await AuthService.resetPassword(email, code, newPassword);
+
+    res.status(HTTP_STATUS.OK).json({
+      success: true,
+      message: 'Password reset successfully',
+    });
+  }
+);
+

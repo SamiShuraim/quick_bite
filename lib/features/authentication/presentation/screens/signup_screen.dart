@@ -1,5 +1,5 @@
-/// Login screen for QuickBite application
-/// Handles user authentication with email and password
+/// Sign Up screen for QuickBite application
+/// Handles new user registration
 library;
 
 import 'package:flutter/material.dart';
@@ -10,18 +10,18 @@ import '../../../../core/utils/app_logger.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../providers/auth_provider.dart';
-import 'signup_screen.dart';
-import 'forgot_password_screen.dart';
+import 'verification_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
@@ -29,15 +29,26 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    AppLogger.lifecycle('LoginScreen', 'initState');
+    AppLogger.lifecycle('SignUpScreen', 'initState');
   }
 
   @override
   void dispose() {
-    AppLogger.lifecycle('LoginScreen', 'dispose');
+    AppLogger.lifecycle('SignUpScreen', 'dispose');
+    _nameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  String? _validateName(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Please enter your name';
+    }
+    if (value.length < 2) {
+      return 'Name must be at least 2 characters';
+    }
+    return null;
   }
 
   String? _validateEmail(String? value) {
@@ -53,15 +64,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
   String? _validatePassword(String? value) {
     if (value == null || value.isEmpty) {
-      return 'Please enter your password';
+      return 'Please enter a password';
     }
     if (value.length < 8) {
       return 'Password must be at least 8 characters';
     }
+    if (!value.contains(RegExp(r'[A-Z]'))) {
+      return 'Password must contain at least one uppercase letter';
+    }
+    if (!value.contains(RegExp(r'[a-z]'))) {
+      return 'Password must contain at least one lowercase letter';
+    }
+    if (!value.contains(RegExp(r'[0-9]'))) {
+      return 'Password must contain at least one number';
+    }
     return null;
   }
 
-  Future<void> _handleLogin() async {
+  Future<void> _handleSignUp() async {
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -72,26 +92,28 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      final success = await authProvider.login(
+      final success = await authProvider.register(
         email: _emailController.text.trim(),
         password: _passwordController.text,
+        name: _nameController.text.trim(),
       );
 
       if (!mounted) return;
 
       if (success) {
-        // Navigate to home screen (placeholder for now)
-        AppLogger.info('Login successful, navigating to home');
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Login successful!'),
-            backgroundColor: AppColors.success,
+        // Navigate to verification screen
+        AppLogger.info('Registration successful, navigating to verification');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VerificationScreen(
+              email: _emailController.text.trim(),
+            ),
           ),
         );
-        // TODO: Navigate to home screen when implemented
       } else {
         // Show error message
-        final errorMessage = authProvider.errorMessage ?? 'Login failed';
+        final errorMessage = authProvider.errorMessage ?? 'Registration failed';
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(errorMessage),
@@ -100,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
         );
       }
     } catch (e) {
-      AppLogger.error('Login error', error: e);
+      AppLogger.error('Registration error', error: e);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -116,20 +138,6 @@ class _LoginScreenState extends State<LoginScreen> {
         });
       }
     }
-  }
-
-  void _navigateToSignUp() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const SignUpScreen()),
-    );
-  }
-
-  void _navigateToForgotPassword() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
-    );
   }
 
   @override
@@ -171,7 +179,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Title
                 Center(
                   child: Text(
-                    'Log In',
+                    'Sign Up',
                     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
                           fontWeight: AppConstants.fontWeightBold,
                         ),
@@ -183,7 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Subtitle
                 Center(
                   child: Text(
-                    'Please sign in to your existing account',
+                    'Please sign up to get started',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: isDarkMode
                               ? AppColors.darkTextSecondary
@@ -193,6 +201,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
 
                 const SizedBox(height: AppConstants.largePadding * 1.5),
+
+                // Name field
+                CustomTextField(
+                  label: 'NAME',
+                  placeholder: 'John Doe',
+                  controller: _nameController,
+                  keyboardType: TextInputType.name,
+                  prefixIcon: Icons.person_outline,
+                  validator: _validateName,
+                  enabled: !_isLoading,
+                ),
+
+                const SizedBox(height: AppConstants.mediumPadding),
 
                 // Email field
                 CustomTextField(
@@ -218,52 +239,39 @@ class _LoginScreenState extends State<LoginScreen> {
                   enabled: !_isLoading,
                 ),
 
-                const SizedBox(height: AppConstants.smallPadding),
+                const SizedBox(height: AppConstants.largePadding),
 
-                // Forgot Password
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: _isLoading ? null : _navigateToForgotPassword,
-                    child: Text(
-                      'Forgot Password?',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: AppColors.primary,
-                            fontWeight: AppConstants.fontWeightMedium,
-                          ),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: AppConstants.mediumPadding),
-
-                // Login Button
+                // Sign Up Button
                 CustomButton(
-                  text: _isLoading ? 'Logging in...' : 'LOG IN',
-                  onPressed: _isLoading ? null : _handleLogin,
+                  text: _isLoading ? 'Signing up...' : 'SIGN UP',
+                  onPressed: _isLoading ? null : _handleSignUp,
                   isFullWidth: true,
                 ),
 
                 const SizedBox(height: AppConstants.defaultPadding),
 
-                // Sign up link
+                // Login link
                 Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Don't have an account? ",
+                        'Already have an account? ',
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                       TextButton(
-                        onPressed: _isLoading ? null : _navigateToSignUp,
+                        onPressed: _isLoading
+                            ? null
+                            : () {
+                                Navigator.pop(context);
+                              },
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.zero,
                           minimumSize: const Size(0, 0),
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         child: Text(
-                          'SIGN UP',
+                          'LOG IN',
                           style:
                               Theme.of(context).textTheme.bodyMedium?.copyWith(
                                     color: AppColors.primary,
@@ -282,3 +290,4 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+

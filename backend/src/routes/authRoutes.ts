@@ -10,6 +10,10 @@ import {
   logout,
   refresh,
   getProfile,
+  verifyEmail,
+  resendVerification,
+  forgotPassword,
+  resetPassword,
 } from '../controllers/authController';
 import {
   validateRegister,
@@ -19,6 +23,7 @@ import {
 } from '../middleware/validation';
 import { authenticate } from '../middleware/auth';
 import { authLimiter } from '../middleware/rateLimiter';
+import { body } from 'express-validator';
 
 const router = Router();
 
@@ -78,6 +83,63 @@ router.post(
  * @access  Private
  */
 router.get('/profile', authenticate, getProfile);
+
+/**
+ * @route   POST /api/v1/auth/verify-email
+ * @desc    Verify email with code
+ * @access  Public
+ */
+router.post(
+  '/verify-email',
+  authLimiter,
+  body('email').isEmail().withMessage('Valid email is required'),
+  body('code').isLength({ min: 4, max: 4 }).withMessage('4-digit code is required'),
+  handleValidationErrors,
+  verifyEmail
+);
+
+/**
+ * @route   POST /api/v1/auth/resend-verification
+ * @desc    Resend verification code
+ * @access  Public
+ */
+router.post(
+  '/resend-verification',
+  authLimiter,
+  body('email').isEmail().withMessage('Valid email is required'),
+  handleValidationErrors,
+  resendVerification
+);
+
+/**
+ * @route   POST /api/v1/auth/forgot-password
+ * @desc    Request password reset
+ * @access  Public
+ */
+router.post(
+  '/forgot-password',
+  authLimiter,
+  body('email').isEmail().withMessage('Valid email is required'),
+  handleValidationErrors,
+  forgotPassword
+);
+
+/**
+ * @route   POST /api/v1/auth/reset-password
+ * @desc    Reset password with code
+ * @access  Public
+ */
+router.post(
+  '/reset-password',
+  authLimiter,
+  body('email').isEmail().withMessage('Valid email is required'),
+  body('code').isLength({ min: 4, max: 4 }).withMessage('4-digit code is required'),
+  body('newPassword')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters'),
+  handleValidationErrors,
+  resetPassword
+);
 
 export default router;
 

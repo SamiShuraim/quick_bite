@@ -15,6 +15,7 @@ class AppColors {
   // Background Colors
   static const Color background = Color(0xFFFFFFFF);
   static const Color backgroundLight = Color(0xFFF5F5F5);
+  static const Color lightBackground = Color(0xFFF5F5F5);
   static const Color surface = Color(0xFFFFFFFF);
 
   // Text Colors
@@ -27,6 +28,7 @@ class AppColors {
   static const Color cardBackground = Color(0xFFF5F5F5);
   static const Color imagePlaceholder = Color(0xFF90A4AE);
   static const Color divider = Color(0xFFE0E0E0);
+  static const Color lightBorder = Color(0xFFE0E0E0);
 
   // Interactive Colors
   static const Color buttonPrimary = primary;
@@ -60,5 +62,6 @@ class AppColors {
   // Dark Mode Components
   static const Color darkImagePlaceholder = Color(0xFF455A64);
   static const Color darkDivider = Color(0xFF404040);
+  static const Color darkBorder = Color(0xFF404040);
 }
 
