@@ -12,6 +12,9 @@ import { config } from './config/environment';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import { apiLimiter } from './middleware/rateLimiter';
 import authRoutes from './routes/authRoutes';
+import restaurantRoutes from './routes/restaurantRoutes';
+import orderRoutes from './routes/orderRoutes';
+import paymentRoutes from './routes/paymentRoutes';
 import { Logger } from './utils/logger';
 
 /**
@@ -68,6 +71,9 @@ export const createApp = (): Application => {
 
   // API Routes
   app.use(`/api/${config.apiVersion}/auth`, authRoutes);
+  app.use(`/api/${config.apiVersion}`, restaurantRoutes);
+  app.use(`/api/${config.apiVersion}`, orderRoutes);
+  app.use(`/api/${config.apiVersion}`, paymentRoutes);
 
   // 404 handler
   app.use(notFoundHandler);

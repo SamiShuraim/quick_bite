@@ -4,6 +4,7 @@ library;
 
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../widgets/page_indicator.dart';
 import '../widgets/onboarding_content.dart';
@@ -24,20 +25,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   // Onboarding pages data
   final List<Map<String, String>> _pages = const [
     {
-      'title': OnboardingConstants.title1,
-      'description': OnboardingConstants.description1,
+      'title': 'All your favorites',
+      'description':
+          'Get all your loved foods in one place, you just place the order we do the rest',
+      'image': 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800',
     },
     {
-      'title': OnboardingConstants.title2,
-      'description': OnboardingConstants.description2,
+      'title': 'Free delivery offers',
+      'description':
+          'Free delivery for new customers via Apple Pay and others payment methods',
+      'image': 'https://images.unsplash.com/photo-1526367790999-0150786686a2?w=800',
     },
     {
-      'title': OnboardingConstants.title3,
-      'description': OnboardingConstants.description3,
+      'title': 'Order from chosen chef',
+      'description':
+          'Get all your loved foods in one place, you just place the order we do the rest',
+      'image': 'https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?w=800',
     },
     {
-      'title': OnboardingConstants.title4,
-      'description': OnboardingConstants.description4,
+      'title': 'Choose your favorites',
+      'description':
+          'Get all your loved foods in one place, you just place the order we do the rest',
+      'image': 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800',
     },
   ];
 
@@ -129,6 +138,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     return OnboardingContent(
                       title: page['title']!,
                       description: page['description']!,
+                      image: page['image'] != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(20),
+                              child: Image.network(
+                                page['image']!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: AppColors.imagePlaceholder,
+                                    child: const Icon(
+                                      Icons.restaurant_menu,
+                                      size: 60,
+                                      color: Colors.white,
+                                    ),
+                                  );
+                                },
+                              ),
+                            )
+                          : null,
                     );
                   },
                 ),

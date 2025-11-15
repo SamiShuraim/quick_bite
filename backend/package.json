@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "nodemon",
     "start": "node dist/server.js",
+    "build": "tsc",
+    "seed": "ts-node src/scripts/seedData.ts",
     "test": "jest",
     "test:watch": "jest --watch",
     "lint": "eslint . --ext .js",

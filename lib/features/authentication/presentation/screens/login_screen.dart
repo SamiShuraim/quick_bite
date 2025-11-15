@@ -132,6 +132,11 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  void _skipAuth() {
+    AppLogger.info('Skipping authentication for testing');
+    Navigator.pushReplacementNamed(context, '/home');
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
@@ -272,6 +277,24 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ],
+                  ),
+                ),
+
+                const SizedBox(height: AppConstants.mediumPadding),
+
+                // Skip Auth Button (for testing)
+                Center(
+                  child: TextButton(
+                    onPressed: _isLoading ? null : _skipAuth,
+                    child: Text(
+                      'Skip Authentication (Testing)',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: isDarkMode
+                                ? AppColors.darkTextSecondary
+                                : AppColors.textSecondary,
+                            decoration: TextDecoration.underline,
+                          ),
+                    ),
                   ),
                 ),
               ],

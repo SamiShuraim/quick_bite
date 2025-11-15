@@ -112,6 +112,33 @@ class ApiClient {
     }
   }
 
+  /// PATCH request
+  Future<Map<String, dynamic>> patch(
+    String endpoint, {
+    required Map<String, dynamic> body,
+    bool includeAuth = true,
+  }) async {
+    try {
+      final url = Uri.parse('${ApiConstants.baseUrl}$endpoint');
+      final headers = await _getHeaders(includeAuth: includeAuth);
+
+      AppLogger.debug('PATCH Request: $url', data: body);
+
+      final response = await _httpClient
+          .patch(
+            url,
+            headers: headers,
+            body: jsonEncode(body),
+          )
+          .timeout(ApiConstants.sendTimeout);
+
+      return _handleResponse(response);
+    } catch (e, stackTrace) {
+      AppLogger.error('PATCH Request Error', error: e, stackTrace: stackTrace);
+      rethrow;
+    }
+  }
+
   /// DELETE request
   Future<Map<String, dynamic>> delete(
     String endpoint, {

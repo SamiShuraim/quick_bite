@@ -1,24 +1,65 @@
-/// API Constants
-/// All API-related constants and endpoints
+/// API Constants for QuickBite application
+/// Contains all API endpoints and configuration
 library;
 
 class ApiConstants {
   ApiConstants._();
 
-  // Base Configuration
-  static const String baseUrl = 'http://localhost:3000';
+  // Base URL - Update this to your backend URL
+  static const String baseUrl = 'http://localhost:3000'; // For development
+  // static const String baseUrl = 'https://your-production-url.com'; // For production
+  
   static const String apiVersion = 'v1';
-  static const String apiPrefix = '/api/$apiVersion';
+  static const String apiBasePath = '/api/$apiVersion';
 
-  // Timeouts
-  static const Duration connectTimeout = Duration(seconds: 30);
+  // Authentication Endpoints
+  static const String authBasePath = '$apiBasePath/auth';
+  static const String loginEndpoint = '$authBasePath/login';
+  static const String registerEndpoint = '$authBasePath/register';
+  static const String logoutEndpoint = '$authBasePath/logout';
+  static const String refreshTokenEndpoint = '$authBasePath/refresh';
+  static const String profileEndpoint = '$authBasePath/profile';
+
+  // Restaurant Endpoints
+  static const String restaurantsEndpoint = '$apiBasePath/restaurants';
+  
+  static String restaurantByIdEndpoint(String id) => '$restaurantsEndpoint/$id';
+  
+  static String restaurantMenuEndpoint(String restaurantId) =>
+      '$restaurantsEndpoint/$restaurantId/menu';
+  
+  static String menuItemByIdEndpoint(String id) => '$apiBasePath/menu-items/$id';
+
+  // Payment Endpoints
+  static const String paymentBasePath = '$apiBasePath/payment';
+  static const String savedCardsEndpoint = '$paymentBasePath/cards';
+  static String savedCardByIdEndpoint(String id) => '$savedCardsEndpoint/$id';
+  static String setDefaultCardEndpoint(String id) => '$savedCardsEndpoint/$id/default';
+  static const String processPaymentEndpoint = '$paymentBasePath/process';
+
+  // Order Endpoints
+  static const String ordersEndpoint = '$apiBasePath/orders';
+  static String orderByIdEndpoint(String id) => '$ordersEndpoint/$id';
+  static String cancelOrderEndpoint(String id) => '$ordersEndpoint/$id/cancel';
+  static String updateOrderStatusEndpoint(String id) => '$ordersEndpoint/$id/status';
+
+  // Request Timeouts
+  static const Duration connectionTimeout = Duration(seconds: 30);
   static const Duration receiveTimeout = Duration(seconds: 30);
-  static const Duration sendTimeout = Duration(seconds: 30);
+
+  // Cache Duration
+  static const Duration restaurantsCacheDuration = Duration(minutes: 15);
+  static const Duration menuItemsCacheDuration = Duration(minutes: 30);
 
   // Headers
+  static const Map<String, String> defaultHeaders = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  };
+
   static const String contentTypeJson = 'application/json';
   static const String authorizationHeader = 'Authorization';
-  static const String bearerPrefix = 'Bearer';
+  static const String bearerPrefix = 'Bearer ';
 
   // Storage Keys
   static const String accessTokenKey = 'access_token';
@@ -26,27 +67,17 @@ class ApiConstants {
   static const String userDataKey = 'user_data';
   static const String isLoggedInKey = 'is_logged_in';
 
-  // Auth Endpoints
-  static const String authBasePath = '/auth';
-  static const String registerEndpoint = '$apiPrefix$authBasePath/register';
-  static const String loginEndpoint = '$apiPrefix$authBasePath/login';
-  static const String logoutEndpoint = '$apiPrefix$authBasePath/logout';
-  static const String refreshTokenEndpoint = '$apiPrefix$authBasePath/refresh';
-  static const String profileEndpoint = '$apiPrefix$authBasePath/profile';
-  static const String forgotPasswordEndpoint =
-      '$apiPrefix$authBasePath/forgot-password';
-  static const String resetPasswordEndpoint =
-      '$apiPrefix$authBasePath/reset-password';
-  static const String verifyEmailEndpoint = '$apiPrefix$authBasePath/verify-email';
+  // Query Parameters
+  static const String categoryParam = 'category';
+  static const String searchParam = 'search';
+  static const String minRatingParam = 'minRating';
+  static const String maxDistanceParam = 'maxDistance';
 
-  // Health Check
-  static const String healthEndpoint = '/health';
+  // Timeouts
+  static const Duration sendTimeout = Duration(seconds: 30);
 
   // Error Messages
-  static const String networkError = 'Network error. Please check your connection.';
+  static const String unauthorizedError = 'Unauthorized. Please login again.';
   static const String serverError = 'Server error. Please try again later.';
-  static const String timeoutError = 'Request timeout. Please try again.';
-  static const String unauthorizedError = 'Session expired. Please login again.';
-  static const String unknownError = 'An unexpected error occurred.';
+  static const String unknownError = 'An unknown error occurred.';
 }
-
