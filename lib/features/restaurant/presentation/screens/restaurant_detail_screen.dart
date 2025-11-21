@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/app_logger.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../../domain/entities/restaurant_entity.dart';
 import '../../domain/entities/menu_item_entity.dart';
 import '../providers/restaurant_provider.dart';
@@ -36,6 +37,14 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   void initState() {
     super.initState();
     AppLogger.lifecycle('RestaurantDetailScreen', 'initState');
+    
+    // Set the selected restaurant in the provider
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final restaurantProvider =
+          Provider.of<RestaurantProvider>(context, listen: false);
+      restaurantProvider.selectRestaurant(widget.restaurant);
+    });
+    
     _loadMenuItems();
   }
 
@@ -266,7 +275,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                         Icons.delivery_dining,
                         widget.restaurant.isFreeDelivery
                             ? 'Free'
-                            : '\$${widget.restaurant.deliveryFee.toStringAsFixed(2)}',
+                            : CurrencyFormatter.format(widget.restaurant.deliveryFee),
                       ),
                       const SizedBox(width: 12),
                       _buildInfoChip(

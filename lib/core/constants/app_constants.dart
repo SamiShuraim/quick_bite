@@ -11,6 +11,7 @@ class AppConstants {
   // App Name
   static const String appName = 'QuickBite';
   static const String appTagline = 'Fast food, even faster';
+  static const String appVersion = '1.0.0';
 
   // Routes
   static const String splashRoute = '/';
@@ -44,6 +45,7 @@ class AppConstants {
 
   // Font Weights
   static const fontWeightBold = FontWeight.bold;
+  static const fontWeightSemiBold = FontWeight.w600;
   static const fontWeightMedium = FontWeight.w500;
   static const fontWeightRegular = FontWeight.normal;
 }

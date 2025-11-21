@@ -9,7 +9,7 @@ import '../../../../core/utils/app_logger.dart';
 
 class CartProvider with ChangeNotifier {
   final List<CartItem> _items = [];
-  static const double taxRate = 0.08; // 8% tax
+  static const double taxRate = 0.15; // 15% VAT (Saudi Arabia)
 
   List<CartItem> get items => _items;
   int get itemCount => _items.fold(0, (sum, item) => sum + item.quantity);
@@ -20,8 +20,8 @@ class CartProvider with ChangeNotifier {
   }
 
   double get deliveryFee {
-    // Free delivery over $30
-    return subtotal >= 30 ? 0 : 2.99;
+    // Free delivery over 30 SAR
+    return subtotal >= 30 ? 0 : 5.00;
   }
 
   double get tax {

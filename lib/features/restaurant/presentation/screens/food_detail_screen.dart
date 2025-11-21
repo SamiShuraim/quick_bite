@@ -7,11 +7,13 @@ import 'package:provider/provider.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/app_logger.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../domain/entities/restaurant_entity.dart';
 import '../../domain/entities/menu_item_entity.dart';
 import '../../domain/entities/cart_entity.dart';
 import '../providers/cart_provider.dart';
+import 'cart_screen_v2.dart';
 
 class FoodDetailScreen extends StatefulWidget {
   final MenuItemEntity menuItem;
@@ -100,7 +102,16 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
       );
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
+    // Save context before navigation
+    if (!mounted) return;
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
+    // Close the food detail screen first
+    navigator.pop();
+
+    // Show success message with option to view cart
+    scaffoldMessenger.showSnackBar(
       SnackBar(
         content: Text('Added ${widget.menuItem.name} to cart'),
         backgroundColor: AppColors.success,
@@ -108,13 +119,17 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
           label: 'VIEW CART',
           textColor: Colors.white,
           onPressed: () {
-            Navigator.pop(context);
+            // Navigate to cart screen
+            navigator.push(
+              MaterialPageRoute(
+                builder: (context) => const CartScreenV2(),
+              ),
+            );
           },
         ),
+        duration: const Duration(seconds: 3),
       ),
     );
-
-    Navigator.pop(context);
   }
 
   @override
@@ -238,7 +253,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                         ),
                       ),
                       Text(
-                        '\$${_basePrice.toStringAsFixed(2)}',
+                        CurrencyFormatter.format(_basePrice),
                         style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                               color: AppColors.primary,
                               fontWeight: AppConstants.fontWeightBold,
@@ -424,7 +439,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
           ],
         ),
         child: CustomButton(
-          text: 'ADD TO CART - \$${_totalPrice.toStringAsFixed(2)}',
+          text: 'ADD TO CART - ${CurrencyFormatter.format(_totalPrice)}',
           onPressed: _canAddToCart ? _addToCart : null,
           isFullWidth: true,
         ),

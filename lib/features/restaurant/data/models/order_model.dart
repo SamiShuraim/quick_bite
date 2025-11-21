@@ -23,6 +23,7 @@ class OrderModel {
   final String status;
   final DateTime estimatedDeliveryTime;
   final String? specialInstructions;
+  final String? driverName;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -41,6 +42,7 @@ class OrderModel {
     required this.status,
     required this.estimatedDeliveryTime,
     this.specialInstructions,
+    this.driverName,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -66,6 +68,7 @@ class OrderModel {
       status: status,
       estimatedDeliveryTime: estimatedDeliveryTime,
       specialInstructions: specialInstructions,
+      driverName: driverName,
       createdAt: createdAt,
       updatedAt: updatedAt,
     );

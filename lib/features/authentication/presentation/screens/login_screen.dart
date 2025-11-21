@@ -80,15 +80,22 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
 
       if (success) {
-        // Navigate to home screen (placeholder for now)
+        // Navigate to home screen
         AppLogger.info('Login successful, navigating to home');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Login successful!'),
             backgroundColor: AppColors.success,
+            duration: Duration(seconds: 1),
           ),
         );
-        // TODO: Navigate to home screen when implemented
+        
+        // Navigate to home and remove all previous routes
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted) {
+            Navigator.pushReplacementNamed(context, '/home');
+          }
+        });
       } else {
         // Show error message
         final errorMessage = authProvider.errorMessage ?? 'Login failed';

@@ -18,6 +18,7 @@ class OrderEntity extends Equatable {
   final String status;
   final DateTime estimatedDeliveryTime;
   final String? specialInstructions;
+  final String? driverName;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -36,6 +37,7 @@ class OrderEntity extends Equatable {
     required this.status,
     required this.estimatedDeliveryTime,
     this.specialInstructions,
+    this.driverName,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -56,6 +58,7 @@ class OrderEntity extends Equatable {
         status,
         estimatedDeliveryTime,
         specialInstructions,
+        driverName,
         createdAt,
         updatedAt,
       ];

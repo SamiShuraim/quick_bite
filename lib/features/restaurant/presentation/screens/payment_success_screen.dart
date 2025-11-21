@@ -4,8 +4,9 @@ library;
 
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../../domain/entities/order_entity.dart';
-import 'home_screen.dart';
+import '../../../../core/navigation/main_navigation.dart';
 
 class PaymentSuccessScreen extends StatelessWidget {
   final OrderEntity order;
@@ -125,7 +126,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                       const SizedBox(height: 8),
                       _buildDetailRow(
                         'Total Amount',
-                        '\$${order.total.toStringAsFixed(2)}',
+                        CurrencyFormatter.format(order.total),
                         isDarkMode,
                         isHighlight: true,
                       ),
@@ -141,10 +142,10 @@ class PaymentSuccessScreen extends StatelessWidget {
                   height: 56,
                   child: ElevatedButton(
                     onPressed: () {
-                      // Navigate to order tracking
+                      // Navigate to orders tab in main navigation
                       Navigator.of(context).pushAndRemoveUntil(
                         MaterialPageRoute(
-                          builder: (context) => const HomeScreen(),
+                          builder: (context) => const MainNavigation(initialIndex: 1),
                         ),
                         (route) => false,
                       );
@@ -157,7 +158,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                       elevation: 0,
                     ),
                     child: const Text(
-                      'TRACK ORDER',
+                      'VIEW ORDER',
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.bold,

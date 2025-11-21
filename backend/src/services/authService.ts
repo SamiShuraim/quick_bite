@@ -72,12 +72,13 @@ export class AuthService {
       throw new ConflictError(API_MESSAGES.ERROR.EMAIL_EXISTS);
     }
 
+    // TODO: Email verification disabled for now - re-enable later if needed
     // Generate verification code
-    const verificationCode = EmailService.generateVerificationCode();
-    const hashedCode = crypto
-      .createHash('sha256')
-      .update(verificationCode)
-      .digest('hex');
+    // const verificationCode = EmailService.generateVerificationCode();
+    // const hashedCode = crypto
+    //   .createHash('sha256')
+    //   .update(verificationCode)
+    //   .digest('hex');
 
     // Create new user
     const user = await User.create({
@@ -85,18 +86,19 @@ export class AuthService {
       password,
       name,
       phone,
-      emailVerificationToken: hashedCode,
+      // emailVerificationToken: hashedCode, // Disabled verification
     });
 
     Logger.auth('User registered', user._id.toString(), { email });
 
+    // TODO: Email verification disabled for now - re-enable later if needed
     // Send verification email
-    try {
-      await EmailService.sendVerificationEmail(email, verificationCode);
-    } catch (error) {
-      Logger.error('Failed to send verification email', error as Error);
-      // Continue even if email fails
-    }
+    // try {
+    //   await EmailService.sendVerificationEmail(email, verificationCode);
+    // } catch (error) {
+    //   Logger.error('Failed to send verification email', error as Error);
+    //   // Continue even if email fails
+    // }
 
     // Generate tokens
     const accessToken = generateAccessToken(

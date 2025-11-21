@@ -6,8 +6,10 @@ class ApiConstants {
   ApiConstants._();
 
   // Base URL - Update this to your backend URL
-  static const String baseUrl = 'http://localhost:3000'; // For development
+  static const String baseUrl = 'http://10.0.2.2:3000'; // For Android Emulator
+  // static const String baseUrl = 'http://localhost:3000'; // For iOS Simulator
   // static const String baseUrl = 'https://your-production-url.com'; // For production
+  // static const String baseUrl = 'http://192.168.x.x:3000'; // For physical device (use your computer's IP)
   
   static const String apiVersion = 'v1';
   static const String apiBasePath = '/api/$apiVersion';

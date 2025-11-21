@@ -4,6 +4,7 @@ library;
 import 'package:flutter/material.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../../domain/entities/menu_item_entity.dart';
 
 class MenuItemCard extends StatelessWidget {
@@ -152,7 +153,7 @@ class MenuItemCard extends StatelessWidget {
                           ],
                         ),
                         Text(
-                          '\$${menuItem.price.toStringAsFixed(2)}',
+                          CurrencyFormatter.format(menuItem.price),
                           style:
                               Theme.of(context).textTheme.titleMedium?.copyWith(
                                     color: AppColors.primary,

@@ -70,7 +70,8 @@ class PaymentProvider with ChangeNotifier {
       notifyListeners();
 
       // Extract last 4 digits
-      final cardLast4 = cardNumber.replaceAll(' ', '').substring(cardNumber.length - 4);
+      final cleanedCardNumber = cardNumber.replaceAll(' ', '');
+      final cardLast4 = cleanedCardNumber.substring(cleanedCardNumber.length - 4);
 
       // Parse expiry date (format: MM/YY)
       final expiryParts = expiryDate.split('/');

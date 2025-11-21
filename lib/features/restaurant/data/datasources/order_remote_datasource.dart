@@ -132,7 +132,7 @@ class OrderRemoteDataSourceImpl implements OrderRemoteDataSource {
   Future<OrderModel> cancelOrder(String orderId) async {
     try {
       AppLogger.debug('Cancelling order: $orderId');
-      final response = await apiClient.post(
+      final response = await apiClient.patch(
         ApiConstants.cancelOrderEndpoint(orderId),
         body: {},
       );

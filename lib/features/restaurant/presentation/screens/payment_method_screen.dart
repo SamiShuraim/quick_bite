@@ -6,10 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/app_logger.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../providers/cart_provider.dart';
 import '../providers/payment_provider.dart';
 import '../providers/order_provider.dart';
 import '../providers/restaurant_provider.dart';
+import '../../domain/entities/restaurant_entity.dart';
 import '../../domain/entities/saved_card_entity.dart';
 import 'add_card_screen.dart';
 import 'payment_success_screen.dart';
@@ -539,7 +541,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                 Row(
                   children: [
                     Text(
-                      '\$${cartProvider.total.toStringAsFixed(2)}',
+                      CurrencyFormatter.format(cartProvider.total),
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -628,7 +630,26 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     }
     
     // Validate restaurant is selected
-    final currentRestaurant = restaurantProvider.selectedRestaurant;
+    RestaurantEntity? currentRestaurant = restaurantProvider.selectedRestaurant;
+    
+    // Fallback: If no restaurant is selected but cart has items, 
+    // try to get restaurant from cart items
+    if (currentRestaurant == null && cartProvider.items.isNotEmpty) {
+      final restaurantId = cartProvider.items.first.menuItem.restaurantId;
+      
+      // Try to find the restaurant in the list of restaurants
+      try {
+        currentRestaurant = restaurantProvider.restaurants.firstWhere(
+          (r) => r.id == restaurantId,
+        );
+        
+        // Set it as selected for future reference
+        restaurantProvider.selectRestaurant(currentRestaurant);
+      } catch (e) {
+        AppLogger.error('Restaurant not found in list', error: e);
+      }
+    }
+    
     if (currentRestaurant == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

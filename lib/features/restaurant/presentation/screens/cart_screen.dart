@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/app_logger.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../providers/cart_provider.dart';
 
@@ -213,7 +214,7 @@ class CartScreen extends StatelessWidget {
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            '\$${item.totalPrice.toStringAsFixed(2)}',
+                                            CurrencyFormatter.format(item.totalPrice),
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .titleMedium
@@ -295,7 +296,7 @@ class CartScreen extends StatelessWidget {
                       _buildSummaryRow(
                         context,
                         'Subtotal',
-                        '\$${cartProvider.subtotal.toStringAsFixed(2)}',
+                        CurrencyFormatter.format(cartProvider.subtotal),
                         isDarkMode,
                       ),
                       const SizedBox(height: 8),
@@ -303,22 +304,22 @@ class CartScreen extends StatelessWidget {
                         context,
                         'Delivery Fee',
                         cartProvider.deliveryFee == 0
-                            ? 'Free'
-                            : '\$${cartProvider.deliveryFee.toStringAsFixed(2)}',
+                            ? 'FREE'
+                            : CurrencyFormatter.format(cartProvider.deliveryFee),
                         isDarkMode,
                       ),
                       const SizedBox(height: 8),
                       _buildSummaryRow(
                         context,
-                        'Tax',
-                        '\$${cartProvider.tax.toStringAsFixed(2)}',
+                        'VAT (15%)',
+                        CurrencyFormatter.format(cartProvider.tax),
                         isDarkMode,
                       ),
                       const Divider(height: 24),
                       _buildSummaryRow(
                         context,
                         'Total',
-                        '\$${cartProvider.total.toStringAsFixed(2)}',
+                        CurrencyFormatter.format(cartProvider.total),
                         isDarkMode,
                         isTotal: true,
                       ),

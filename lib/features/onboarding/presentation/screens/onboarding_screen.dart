@@ -3,6 +3,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/custom_button.dart';
@@ -115,6 +116,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -141,16 +143,57 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       image: page['image'] != null
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(20),
-                              child: Image.network(
-                                page['image']!,
+                              child: CachedNetworkImage(
+                                imageUrl: page['image']!,
                                 fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) {
+                                fadeInDuration: const Duration(milliseconds: 300),
+                                fadeOutDuration: const Duration(milliseconds: 100),
+                                placeholder: (context, url) => Container(
+                                  color: AppColors.imagePlaceholder,
+                                  child: const Center(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        CircularProgressIndicator(
+                                          valueColor: AlwaysStoppedAnimation<Color>(
+                                            AppColors.primary,
+                                          ),
+                                        ),
+                                        SizedBox(height: 16),
+                                        Text(
+                                          'Loading image...',
+                                          style: TextStyle(
+                                            color: Colors.white70,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                errorWidget: (context, url, error) {
+                                  AppLogger.error('Failed to load image: $url', error: error);
                                   return Container(
                                     color: AppColors.imagePlaceholder,
-                                    child: const Icon(
-                                      Icons.restaurant_menu,
-                                      size: 60,
-                                      color: Colors.white,
+                                    child: const Center(
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.restaurant_menu,
+                                            size: 60,
+                                            color: Colors.white,
+                                          ),
+                                          SizedBox(height: 16),
+                                          Text(
+                                            'Image not available',
+                                            style: TextStyle(
+                                              color: Colors.white70,
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   );
                                 },

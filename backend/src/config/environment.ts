@@ -4,10 +4,12 @@
  */
 
 import dotenv from 'dotenv';
+import path from 'path';
 import { ENV_KEYS } from './constants';
 
 // Load environment variables from .env file
-dotenv.config();
+// Ensure we load from the backend root directory
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 /**
  * Validate required environment variables
@@ -30,6 +32,19 @@ const validateEnv = (): void => {
 
 // Validate on module load
 validateEnv();
+
+// Debug: Log loaded configuration (REMOVE IN PRODUCTION)
+console.log('');
+console.log('========================================');
+console.log('🔧 ENVIRONMENT CONFIGURATION LOADED');
+console.log('========================================');
+console.log('NODE_ENV:', process.env[ENV_KEYS.NODE_ENV] || 'development');
+console.log('PORT:', process.env[ENV_KEYS.PORT] || '3000');
+console.log('MONGODB_URI:', process.env[ENV_KEYS.MONGODB_URI]?.substring(0, 50) + '...');
+console.log('JWT_SECRET (first 20 chars):', process.env[ENV_KEYS.JWT_SECRET]?.substring(0, 20) + '...');
+console.log('JWT_EXPIRES_IN:', process.env[ENV_KEYS.JWT_EXPIRES_IN] || '15m');
+console.log('========================================');
+console.log('');
 
 /**
  * Environment configuration object

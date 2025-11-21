@@ -125,7 +125,7 @@ export const API_ROUTES = {
   },
 };
 
-// Environment Variables Keys
+// Environment Variables Keys (these are the KEY NAMES, not the values)
 export const ENV_KEYS = {
   NODE_ENV: 'NODE_ENV',
   PORT: 'PORT',

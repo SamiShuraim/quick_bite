@@ -4,6 +4,7 @@ library;
 
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/app_logger.dart';
@@ -28,7 +29,42 @@ class _SplashScreenState extends State<SplashScreen>
     AppLogger.lifecycle('SplashScreen', 'initState');
 
     _initializeAnimations();
-    _navigateToOnboarding();
+    
+    // Defer navigation until after the first frame to ensure context is available
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _navigateToOnboarding();
+    });
+  }
+
+  /// Preload onboarding images during splash screen
+  Future<void> _preloadOnboardingImages() async {
+    try {
+      AppLogger.info('Preloading onboarding images');
+      
+      final imageUrls = [
+        'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800',
+        'https://images.unsplash.com/photo-1526367790999-0150786686a2?w=800',
+        'https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?w=800',
+        'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800',
+      ];
+
+      // Preload all images in parallel using CachedNetworkImage
+      await Future.wait(
+        imageUrls.map((url) async {
+          try {
+            await precacheImage(CachedNetworkImageProvider(url), context);
+          } catch (e) {
+            AppLogger.error('Failed to preload image: $url', error: e);
+            // Continue even if one image fails
+          }
+        }),
+      );
+
+      AppLogger.info('Onboarding images preloaded successfully');
+    } catch (e) {
+      AppLogger.error('Failed to preload onboarding images', error: e);
+      // Continue even if preloading fails
+    }
   }
 
   void _initializeAnimations() {
@@ -54,32 +90,33 @@ class _SplashScreenState extends State<SplashScreen>
     _animationController.forward();
   }
 
-  void _navigateToOnboarding() {
-    Timer(
-      const Duration(seconds: AppConstants.splashDurationSeconds),
-      () {
-        if (mounted) {
-          AppLogger.navigation('SplashScreen', 'OnboardingScreen');
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) =>
-                  const OnboardingScreen(),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                return FadeTransition(
-                  opacity: animation,
-                  child: child,
-                );
-              },
-              transitionDuration: const Duration(
-                milliseconds: AppConstants.pageTransitionMilliseconds,
-              ),
-            ),
-          );
-        }
-      },
-    );
+  Future<void> _navigateToOnboarding() async {
+    // Wait for minimum splash duration and image preloading
+    await Future.wait([
+      Future.delayed(const Duration(seconds: AppConstants.splashDurationSeconds)),
+      _preloadOnboardingImages(),
+    ]);
+
+    if (mounted) {
+      AppLogger.navigation('SplashScreen', 'OnboardingScreen');
+      Navigator.pushReplacement(
+        context,
+        PageRouteBuilder(
+          pageBuilder: (context, animation, secondaryAnimation) =>
+              const OnboardingScreen(),
+          transitionsBuilder:
+              (context, animation, secondaryAnimation, child) {
+            return FadeTransition(
+              opacity: animation,
+              child: child,
+            );
+          },
+          transitionDuration: const Duration(
+            milliseconds: AppConstants.pageTransitionMilliseconds,
+          ),
+        ),
+      );
+    }
   }
 
   @override

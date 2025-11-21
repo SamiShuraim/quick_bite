@@ -8,6 +8,7 @@ import { connectDatabase } from './config/database';
 import { config } from './config/environment';
 import { Logger } from './utils/logger';
 import { API_MESSAGES } from './config/constants';
+import { startOrderStatusCron } from './services/orderStatusCron';
 
 /**
  * Start the server
@@ -22,6 +23,9 @@ const startServer = async (): Promise<void> => {
 
     // Create Express app
     const app = createApp();
+
+    // Start order status cron job
+    startOrderStatusCron();
 
     // Start listening
     const server = app.listen(config.port, () => {

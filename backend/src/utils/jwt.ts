@@ -37,6 +37,9 @@ export const generateAccessToken = (
     audience: JWT_CONFIG.AUDIENCE,
   };
   
+  console.log('🔑 GENERATING TOKEN with secret:', config.jwt.secret?.substring(0, 20) + '...');
+  console.log('🔑 Token expires in:', config.jwt.expiresIn);
+  
   return jwt.sign(payload, config.jwt.secret, options as SignOptions);
 };
 
@@ -69,10 +72,15 @@ export const generateRefreshToken = (
  */
 export const verifyAccessToken = (token: string): TokenPayload => {
   try {
+    console.log('🔓 VERIFYING TOKEN with secret:', config.jwt.secret?.substring(0, 20) + '...');
+    console.log('🔓 Token to verify (first 50 chars):', token.substring(0, 50) + '...');
+    
     const decoded = jwt.verify(token, config.jwt.secret, {
       issuer: JWT_CONFIG.ISSUER,
       audience: JWT_CONFIG.AUDIENCE,
     }) as TokenPayload;
+
+    console.log('✅ Token verified successfully for user:', decoded.userId);
 
     if (decoded.type !== TOKEN_TYPES.ACCESS) {
       throw new UnauthorizedError('Invalid token type');
@@ -80,6 +88,7 @@ export const verifyAccessToken = (token: string): TokenPayload => {
 
     return decoded;
   } catch (error) {
+    console.log('❌ Token verification FAILED:', error);
     if (error instanceof jwt.JsonWebTokenError) {
       throw new UnauthorizedError('Invalid token');
     }
@@ -124,7 +133,9 @@ export const extractTokenFromHeader = (authHeader?: string): string => {
     throw new UnauthorizedError('No token provided');
   }
 
-  return authHeader.substring(7); // Remove 'Bearer ' prefix
+  const token = authHeader.substring(7).trim(); // Remove 'Bearer ' prefix and trim whitespace
+  console.log('📋 Extracted token (first 50 chars):', token.substring(0, 50) + '...');
+  return token;
 };
 
 /**

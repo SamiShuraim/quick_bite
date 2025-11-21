@@ -12,7 +12,7 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
   name: json['name'] as String,
   phone: json['phone'] as String?,
   role: json['role'] as String,
-  isEmailVerified: json['isEmailVerified'] as bool,
+  isEmailVerified: json['isEmailVerified'] as bool?,
   createdAt: json['createdAt'] == null
       ? null
       : DateTime.parse(json['createdAt'] as String),

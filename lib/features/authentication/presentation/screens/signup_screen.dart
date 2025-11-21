@@ -10,7 +10,6 @@ import '../../../../core/utils/app_logger.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../providers/auth_provider.dart';
-import 'verification_screen.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -101,16 +100,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (!mounted) return;
 
       if (success) {
-        // Navigate to verification screen
-        AppLogger.info('Registration successful, navigating to verification');
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => VerificationScreen(
-              email: _emailController.text.trim(),
-            ),
+        // Skip verification - user is now authenticated, navigate to home
+        AppLogger.info('Registration successful, navigating to home');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Account created successfully!'),
+            backgroundColor: AppColors.success,
+            duration: Duration(seconds: 1),
           ),
         );
+        
+        // Navigate to home and remove all previous routes
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted) {
+            Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+          }
+        });
       } else {
         // Show error message
         final errorMessage = authProvider.errorMessage ?? 'Registration failed';

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/custom_button.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../providers/cart_provider.dart';
 import 'payment_method_screen.dart';
 
@@ -184,7 +185,7 @@ class CartScreenV2 extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    '\$${item.menuItem.price.toStringAsFixed(2)}',
+                    CurrencyFormatter.format(item.menuItem.price),
                     style: TextStyle(
                       fontSize: 14,
                       color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
@@ -353,6 +354,34 @@ class CartScreenV2 extends StatelessWidget {
             
             const SizedBox(height: 16),
             
+            // Price Breakdown
+            _buildPriceRow(
+              'Subtotal',
+              CurrencyFormatter.format(cartProvider.subtotal),
+              isDarkMode,
+            ),
+            const SizedBox(height: 8),
+            _buildPriceRow(
+              'Delivery Fee',
+              cartProvider.deliveryFee > 0 
+                  ? CurrencyFormatter.format(cartProvider.deliveryFee)
+                  : 'FREE',
+              isDarkMode,
+            ),
+            const SizedBox(height: 8),
+            _buildPriceRow(
+              'VAT (15%)',
+              CurrencyFormatter.format(cartProvider.tax),
+              isDarkMode,
+            ),
+            
+            const SizedBox(height: 12),
+            Divider(
+              color: isDarkMode ? Colors.grey[800] : Colors.grey[300],
+              thickness: 1,
+            ),
+            const SizedBox(height: 12),
+            
             // Total Price
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -367,7 +396,7 @@ class CartScreenV2 extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      '\$${cartProvider.total.toStringAsFixed(2)}',
+                      CurrencyFormatter.format(cartProvider.total),
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -431,6 +460,29 @@ class CartScreenV2 extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildPriceRow(String label, String value, bool isDarkMode) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: isDarkMode ? Colors.white : Colors.black,
+          ),
+        ),
+      ],
     );
   }
 }

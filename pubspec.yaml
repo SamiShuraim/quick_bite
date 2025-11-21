@@ -54,6 +54,12 @@ dependencies:
   
   # Equality
   equatable: ^2.0.5
+  
+  # Internationalization
+  intl: ^0.19.0
+  
+  # Image Caching
+  cached_network_image: ^3.3.1
 
 dev_dependencies:
   flutter_test:

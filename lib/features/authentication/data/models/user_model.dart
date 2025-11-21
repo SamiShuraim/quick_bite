@@ -14,7 +14,7 @@ class UserModel {
   final String name;
   final String? phone;
   final String role;
-  final bool isEmailVerified;
+  final bool? isEmailVerified; // Made nullable since verification is disabled
   final DateTime? createdAt;
 
   const UserModel({
@@ -23,7 +23,7 @@ class UserModel {
     required this.name,
     this.phone,
     required this.role,
-    required this.isEmailVerified,
+    this.isEmailVerified, // Optional now
     this.createdAt,
   });
 
@@ -42,7 +42,7 @@ class UserModel {
       name: name,
       phone: phone,
       role: role,
-      isEmailVerified: isEmailVerified,
+      isEmailVerified: isEmailVerified ?? false, // Default to false if null
       createdAt: createdAt,
     );
   }

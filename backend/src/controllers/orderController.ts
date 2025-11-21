@@ -79,6 +79,7 @@ export const createOrder = async (req: Request, res: Response): Promise<void> =>
       status: 'pending',
       estimatedDeliveryTime,
       specialInstructions,
+      statusUpdatedAt: new Date(),
     });
 
     Logger.info(`Order created: ${order.orderNumber} for user: ${userId}`);
@@ -208,16 +209,17 @@ export const cancelOrder = async (req: Request, res: Response): Promise<void> =>
       return;
     }
 
-    // Can only cancel pending or confirmed orders
-    if (!['pending', 'confirmed'].includes(order.status)) {
+    // Can only cancel pending orders (within 0-5 min window before restaurant starts preparing)
+    if (order.status !== 'pending') {
       res.status(400).json({
         success: false,
-        message: 'Cannot cancel order in current status',
+        message: 'Cannot cancel order - restaurant is already preparing your food',
       });
       return;
     }
 
     order.status = 'cancelled';
+    order.statusUpdatedAt = new Date();
     await order.save();
 
     Logger.info(`Order cancelled: ${order.orderNumber}`);
@@ -246,7 +248,7 @@ export const updateOrderStatus = async (req: Request, res: Response): Promise<vo
     const { id } = req.params;
     const { status } = req.body;
 
-    const validStatuses = ['pending', 'confirmed', 'preparing', 'on_the_way', 'delivered', 'cancelled'];
+    const validStatuses = ['pending', 'confirmed', 'preparing', 'on_the_way', 'arriving_soon', 'delivered', 'cancelled'];
     
     if (!validStatuses.includes(status)) {
       res.status(400).json({
@@ -267,6 +269,7 @@ export const updateOrderStatus = async (req: Request, res: Response): Promise<vo
     }
 
     order.status = status;
+    order.statusUpdatedAt = new Date();
     
     // Update payment status if delivered
     if (status === 'delivered' && order.paymentDetails.method === 'cash') {
