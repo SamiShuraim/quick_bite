@@ -34,7 +34,7 @@ const savedCardSchema = new Schema<ISavedCard>(
     cardBrand: {
       type: String,
       required: true,
-      enum: ['visa', 'mastercard', 'amex', 'discover', 'other'],
+      enum: ['visa', 'mada', 'mastercard', 'amex', 'discover', 'other'],
     },
     cardHolderName: {
       type: String,

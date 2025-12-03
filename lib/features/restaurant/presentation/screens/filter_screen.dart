@@ -3,9 +3,11 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/custom_button.dart';
+import '../providers/restaurant_provider.dart';
 
 class FilterScreen extends StatefulWidget {
   const FilterScreen({super.key});
@@ -15,17 +17,19 @@ class FilterScreen extends StatefulWidget {
 }
 
 class _FilterScreenState extends State<FilterScreen> {
-  RangeValues _priceRange = const RangeValues(0, 50);
-  double _maxDistance = 10;
-  final Set<String> _selectedPaymentMethods = {'Credit Card'};
-  final Set<String> _selectedFilters = {};
-
-  final List<String> _paymentMethods = [
-    'Credit Card',
-    'Debit Card',
-    'Online Payment',
-    'Cash on Delivery',
-  ];
+  late RangeValues _priceRange;
+  late double _maxDistance;
+  late Set<String> _selectedFilters;
+  
+  @override
+  void initState() {
+    super.initState();
+    // Initialize with current filter values from provider
+    final provider = Provider.of<RestaurantProvider>(context, listen: false);
+    _priceRange = RangeValues(provider.minPrice, provider.maxPrice);
+    _maxDistance = provider.maxDistance;
+    _selectedFilters = Set.from(provider.selectedFilters);
+  }
 
   final List<String> _filters = [
     'Free Delivery',
@@ -50,10 +54,8 @@ class _FilterScreenState extends State<FilterScreen> {
           TextButton(
             onPressed: () {
               setState(() {
-                _priceRange = const RangeValues(0, 50);
-                _maxDistance = 10;
-                _selectedPaymentMethods.clear();
-                _selectedPaymentMethods.add('Credit Card');
+                _priceRange = const RangeValues(0, 100);
+                _maxDistance = 20;
                 _selectedFilters.clear();
               });
             },
@@ -84,8 +86,8 @@ class _FilterScreenState extends State<FilterScreen> {
               divisions: 20,
               activeColor: AppColors.primary,
               labels: RangeLabels(
-                '\$${_priceRange.start.round()}',
-                '\$${_priceRange.end.round()}',
+                '${_priceRange.start.round()} SAR',
+                '${_priceRange.end.round()} SAR',
               ),
               onChanged: (values) {
                 setState(() {
@@ -97,7 +99,7 @@ class _FilterScreenState extends State<FilterScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '\$${_priceRange.start.round()}',
+                  '${_priceRange.start.round()} SAR',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: isDarkMode
                             ? AppColors.darkTextSecondary
@@ -105,7 +107,7 @@ class _FilterScreenState extends State<FilterScreen> {
                       ),
                 ),
                 Text(
-                  '\$${_priceRange.end.round()}',
+                  '${_priceRange.end.round()} SAR',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: isDarkMode
                             ? AppColors.darkTextSecondary
@@ -149,53 +151,9 @@ class _FilterScreenState extends State<FilterScreen> {
 
             const SizedBox(height: 32),
 
-            // Payment Methods
+            // Filters
             Text(
-              'Payment Methods',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: AppConstants.fontWeightBold,
-                  ),
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: _paymentMethods.map((method) {
-                final isSelected = _selectedPaymentMethods.contains(method);
-                return FilterChip(
-                  label: Text(method),
-                  selected: isSelected,
-                  onSelected: (selected) {
-                    setState(() {
-                      if (selected) {
-                        _selectedPaymentMethods.add(method);
-                      } else {
-                        _selectedPaymentMethods.remove(method);
-                      }
-                    });
-                  },
-                  selectedColor: AppColors.primary.withOpacity(0.2),
-                  checkmarkColor: AppColors.primary,
-                  backgroundColor: isDarkMode
-                      ? AppColors.darkCardBackground
-                      : AppColors.cardBackground,
-                  labelStyle: TextStyle(
-                    color: isSelected
-                        ? AppColors.primary
-                        : (isDarkMode
-                            ? AppColors.darkTextPrimary
-                            : AppColors.textPrimary),
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                  ),
-                );
-              }).toList(),
-            ),
-
-            const SizedBox(height: 32),
-
-            // Additional Filters
-            Text(
-              'Additional Filters',
+              'Filters',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: AppConstants.fontWeightBold,
                   ),
@@ -254,11 +212,25 @@ class _FilterScreenState extends State<FilterScreen> {
         child: CustomButton(
           text: 'APPLY FILTERS',
           onPressed: () {
-            // Apply filters and go back
+            // Apply filters to provider
+            final provider = Provider.of<RestaurantProvider>(context, listen: false);
+            provider.applyAdvancedFilters(
+              minPrice: _priceRange.start,
+              maxPrice: _priceRange.end,
+              maxDistance: _maxDistance,
+              paymentMethods: {}, // Empty set - all restaurants accept all payment methods
+              filters: _selectedFilters,
+            );
+            
+            // Go back
             Navigator.pop(context);
+            
+            // Show success message
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Filters applied successfully'),
+              SnackBar(
+                content: Text(
+                  'Filters applied${_selectedFilters.isNotEmpty ? ": ${_selectedFilters.join(", ")}" : ""}',
+                ),
                 backgroundColor: AppColors.success,
               ),
             );

@@ -15,6 +15,7 @@ class RestaurantEntity extends Equatable {
   final List<String> categories;
   final bool isFreeDelivery;
   final bool isPopular;
+  final bool hasVegetarianOptions;
   final String address;
   final double distance; // in km
 
@@ -30,6 +31,7 @@ class RestaurantEntity extends Equatable {
     required this.categories,
     this.isFreeDelivery = false,
     this.isPopular = false,
+    this.hasVegetarianOptions = false,
     required this.address,
     required this.distance,
   });
@@ -47,6 +49,7 @@ class RestaurantEntity extends Equatable {
         categories,
         isFreeDelivery,
         isPopular,
+        hasVegetarianOptions,
         address,
         distance,
       ];

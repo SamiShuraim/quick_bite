@@ -128,24 +128,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         activeThumbColor: AppColors.primary,
                       ),
                     ),
-                    
-                    _buildDivider(isDarkMode),
-                    
-                    // Notifications
-                    _buildSettingItem(
-                      context,
-                      icon: Icons.notifications_outlined,
-                      title: 'Notifications',
-                      trailing: Switch(
-                        value: true,
-                        onChanged: (value) {
-                          // TODO: Implement notifications toggle
-                          AppLogger.userAction('Notifications toggle', 
-                            details: {'enabled': value});
-                        },
-                        activeThumbColor: AppColors.primary,
-                      ),
-                    ),
                   ],
                 ),
               ),
@@ -168,20 +150,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       icon: Icons.person_outline,
                       title: 'Edit Profile',
                       onTap: () {
-                        // TODO: Navigate to edit profile
+                        Navigator.pushNamed(context, '/edit-profile');
                         AppLogger.userAction('Edit profile tapped');
-                      },
-                    ),
-                    
-                    _buildDivider(isDarkMode),
-                    
-                    _buildMenuItem(
-                      context,
-                      icon: Icons.location_on_outlined,
-                      title: 'Addresses',
-                      onTap: () {
-                        // TODO: Navigate to addresses
-                        AppLogger.userAction('Addresses tapped');
                       },
                     ),
                     
@@ -192,46 +162,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       icon: Icons.payment_outlined,
                       title: 'Payment Methods',
                       onTap: () {
-                        // TODO: Navigate to payment methods
+                        Navigator.pushNamed(context, '/payment-methods');
                         AppLogger.userAction('Payment methods tapped');
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              
-              const SizedBox(height: 16),
-              
-              // Support Section
-              Container(
-                margin: const EdgeInsets.symmetric(horizontal: 24),
-                decoration: BoxDecoration(
-                  color: isDarkMode
-                      ? AppColors.darkCardBackground
-                      : AppColors.cardBackground,
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: Column(
-                  children: [
-                    _buildMenuItem(
-                      context,
-                      icon: Icons.help_outline,
-                      title: 'Help & Support',
-                      onTap: () {
-                        // TODO: Navigate to help
-                        AppLogger.userAction('Help & Support tapped');
-                      },
-                    ),
-                    
-                    _buildDivider(isDarkMode),
-                    
-                    _buildMenuItem(
-                      context,
-                      icon: Icons.info_outline,
-                      title: 'About',
-                      onTap: () {
-                        // TODO: Navigate to about
-                        AppLogger.userAction('About tapped');
                       },
                     ),
                   ],

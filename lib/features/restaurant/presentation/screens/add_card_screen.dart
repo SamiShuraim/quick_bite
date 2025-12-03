@@ -10,7 +10,12 @@ import '../../../../core/utils/app_logger.dart';
 import '../providers/payment_provider.dart';
 
 class AddCardScreen extends StatefulWidget {
-  const AddCardScreen({super.key});
+  final String? cardType; // 'visa', 'mada', or null for auto-detect
+  
+  const AddCardScreen({
+    super.key,
+    this.cardType,
+  });
 
   @override
   State<AddCardScreen> createState() => _AddCardScreenState();
@@ -36,6 +41,19 @@ class _AddCardScreenState extends State<AddCardScreen> {
   String _detectCardBrand(String cardNumber) {
     final cleaned = cardNumber.replaceAll(' ', '');
     if (cleaned.isEmpty) return 'visa';
+    
+    // Mada: starts with 4 and specific BIN ranges (Saudi Arabia)
+    // Common Mada BINs: 440647, 440795, 446404, 457865, 484783, 486094, 486095, 489317, 489318, 489319, 504300, 506968, 507803, 508160, 508420, 510621, 529415, 531095, 531196, 543357, 543388, 543508, 558563, 585265, 588982, 588983, 589206
+    if (cleaned.length >= 6) {
+      final bin = cleaned.substring(0, 6);
+      final madaBins = [
+        '440647', '440795', '446404', '457865', '484783', '486094', '486095', 
+        '489317', '489318', '489319', '504300', '506968', '507803', '508160', 
+        '508420', '510621', '529415', '531095', '531196', '543357', '543388', 
+        '543508', '558563', '585265', '588982', '588983', '589206'
+      ];
+      if (madaBins.contains(bin)) return 'mada';
+    }
     
     // Visa: starts with 4
     if (cleaned.startsWith('4')) return 'visa';
@@ -63,7 +81,8 @@ class _AddCardScreenState extends State<AddCardScreen> {
     try {
       final paymentProvider = context.read<PaymentProvider>();
       
-      final cardBrand = _detectCardBrand(_cardNumberController.text);
+      // Use provided card type, otherwise auto-detect
+      final cardBrand = widget.cardType ?? _detectCardBrand(_cardNumberController.text);
       
       await paymentProvider.addSavedCard(
         cardNumber: _cardNumberController.text,
@@ -134,9 +153,11 @@ class _AddCardScreenState extends State<AddCardScreen> {
           ],
         ),
         leadingWidth: 56,
-        title: const Text(
-          'Add Card',
-          style: TextStyle(
+        title: Text(
+          widget.cardType != null 
+              ? 'Add ${widget.cardType!.toUpperCase()} Card'
+              : 'Add Card',
+          style: const TextStyle(
             color: AppColors.primary,
             fontSize: 16,
             fontWeight: FontWeight.w600,

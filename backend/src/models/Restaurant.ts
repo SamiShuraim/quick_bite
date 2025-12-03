@@ -16,6 +16,7 @@ export interface IRestaurant extends Document {
   categories: string[];
   isFreeDelivery: boolean;
   isPopular: boolean;
+  hasVegetarianOptions: boolean;
   address: string;
   distance: number;
   ownerId?: string;
@@ -70,6 +71,10 @@ const restaurantSchema = new Schema<IRestaurant>(
       default: false,
     },
     isPopular: {
+      type: Boolean,
+      default: false,
+    },
+    hasVegetarianOptions: {
       type: Boolean,
       default: false,
     },

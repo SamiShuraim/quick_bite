@@ -37,6 +37,8 @@ import 'features/authentication/domain/usecases/logout_usecase.dart';
 import 'features/authentication/domain/usecases/get_profile_usecase.dart';
 import 'features/authentication/domain/usecases/get_cached_user_usecase.dart';
 import 'features/authentication/domain/usecases/check_login_status_usecase.dart';
+import 'features/profile/presentation/screens/edit_profile_screen.dart';
+import 'features/restaurant/presentation/screens/unified_payment_screen.dart';
 
 void main() async {
   // Ensure Flutter bindings are initialized
@@ -195,6 +197,8 @@ class _QuickBiteAppState extends State<QuickBiteApp> {
             // Named Routes
             routes: {
               '/home': (context) => const MainNavigation(),
+              '/edit-profile': (context) => const EditProfileScreen(),
+              '/payment-methods': (context) => const UnifiedPaymentScreen(),
             },
 
             // Builder for additional app-level configurations

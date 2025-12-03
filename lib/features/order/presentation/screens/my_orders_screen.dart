@@ -9,7 +9,12 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/app_logger.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../restaurant/presentation/providers/order_provider.dart';
+import '../../../restaurant/presentation/providers/cart_provider.dart';
+import '../../../restaurant/presentation/providers/restaurant_provider.dart';
 import '../../../restaurant/domain/entities/order_entity.dart';
+import '../../../restaurant/domain/entities/cart_entity.dart';
+import '../../../restaurant/domain/entities/menu_item_entity.dart';
+import '../../../restaurant/presentation/screens/cart_screen_v2.dart';
 import 'package:intl/intl.dart';
 import 'order_tracking_screen.dart';
 
@@ -68,13 +73,13 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                   const SizedBox(width: 8),
                   _buildFilterChip('Pending', 'pending', isDarkMode),
                   const SizedBox(width: 8),
-                  _buildFilterChip('Confirmed', 'confirmed', isDarkMode),
+                  _buildFilterChip('Preparing', 'confirmed', isDarkMode),
                   const SizedBox(width: 8),
-                  _buildFilterChip('Preparing', 'preparing', isDarkMode),
+                  _buildFilterChip('On the Way', 'on_the_way', isDarkMode),
                   const SizedBox(width: 8),
-                  _buildFilterChip('Delivering', 'out_for_delivery', isDarkMode),
+                  _buildFilterChip('Arriving Soon', 'arriving_soon', isDarkMode),
                   const SizedBox(width: 8),
-                  _buildFilterChip('Completed', 'delivered', isDarkMode),
+                  _buildFilterChip('Delivered', 'delivered', isDarkMode),
                   const SizedBox(width: 8),
                   _buildFilterChip('Cancelled', 'cancelled', isDarkMode),
                 ],
@@ -277,6 +282,67 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                     ),
                   ],
                 ),
+                
+                const SizedBox(height: 16),
+                
+                // Action Buttons
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () => _handleReorder(context, order),
+                        style: OutlinedButton.styleFrom(
+                          side: BorderSide(color: AppColors.primary, width: 1.5),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                        icon: const Icon(Icons.refresh, color: AppColors.primary, size: 18),
+                        label: const Text(
+                          'REORDER',
+                          style: TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => OrderTrackingScreen(order: order),
+                            ),
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          elevation: 0,
+                        ),
+                        icon: const Icon(Icons.remove_red_eye_outlined, color: Colors.white, size: 18),
+                        label: const Text(
+                          'VIEW',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -375,6 +441,172 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
         ],
       ),
     );
+  }
+  
+  Future<void> _handleReorder(BuildContext context, OrderEntity order) async {
+    try {
+      AppLogger.userAction('Reorder clicked', details: {'orderId': order.id});
+      
+      final cartProvider = context.read<CartProvider>();
+      final restaurantProvider = context.read<RestaurantProvider>();
+      
+      // Show loading dialog
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+      
+      // Clear current cart
+      cartProvider.clearCart();
+      
+      int successfulItems = 0;
+      int failedItems = 0;
+      final List<String> unavailableItems = [];
+      
+      // Fetch menu items for each order item to get full details
+      for (final orderItem in order.items) {
+        try {
+          final menuItem = await restaurantProvider.getMenuItemById(orderItem.menuItemId);
+          
+          // Convert order customizations to cart customizations
+          final customizations = <SelectedCustomization>[];
+          if (orderItem.customizations != null) {
+            for (final orderCustomization in orderItem.customizations!) {
+              // Find matching customization option in menu item
+              try {
+                final customizationOption = menuItem.customizations.firstWhere(
+                  (opt) => opt.name == orderCustomization.optionName,
+                );
+                
+                // Convert choice names to CustomizationChoice objects
+                final selectedChoices = <CustomizationChoice>[];
+                for (final choiceName in orderCustomization.choices) {
+                  try {
+                    final choice = customizationOption.choices.firstWhere(
+                      (c) => c.name == choiceName,
+                    );
+                    selectedChoices.add(choice);
+                  } catch (e) {
+                    AppLogger.warning('Choice $choiceName not found, skipping');
+                  }
+                }
+                
+                if (selectedChoices.isNotEmpty) {
+                  customizations.add(SelectedCustomization(
+                    optionId: customizationOption.id,
+                    optionName: customizationOption.name,
+                    selectedChoices: selectedChoices,
+                  ));
+                }
+              } catch (e) {
+                AppLogger.warning('Customization option ${orderCustomization.optionName} not found, skipping');
+              }
+            }
+          }
+          
+          // Add item to cart with the correct quantity
+          for (int i = 0; i < orderItem.quantity; i++) {
+            cartProvider.addItem(
+              menuItem: menuItem,
+              customizations: customizations,
+            );
+          }
+          
+          successfulItems++;
+          AppLogger.info('Added ${orderItem.name} to cart (x${orderItem.quantity})');
+        } catch (e) {
+          failedItems++;
+          unavailableItems.add(orderItem.name);
+          AppLogger.error('Error fetching menu item ${orderItem.menuItemId}: ${orderItem.name}', error: e);
+          // Continue with other items even if one fails
+        }
+      }
+      
+      // Close loading dialog
+      if (!mounted) return;
+      Navigator.pop(context);
+      
+      // Check if any items were added successfully
+      if (successfulItems == 0) {
+        // No items could be added - show error and don't navigate
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Unable to reorder. All items from this order are no longer available.',
+            ),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+        return;
+      }
+      
+      // Set the restaurant as selected
+      try {
+        final restaurant = restaurantProvider.restaurants.firstWhere(
+          (r) => r.id == order.restaurantId,
+        );
+        restaurantProvider.selectRestaurant(restaurant);
+      } catch (e) {
+        AppLogger.warning('Could not find restaurant ${order.restaurantId}');
+      }
+      
+      // Navigate to cart
+      if (!mounted) return;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const CartScreenV2(),
+        ),
+      );
+      
+      // Show success/warning message
+      if (failedItems > 0) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Added $successfulItems item(s) to cart. $failedItems item(s) are no longer available:\n${unavailableItems.join(", ")}',
+            ),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      } else {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Successfully added all items to cart!'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      }
+      
+      AppLogger.info('Reorder completed: $successfulItems items added, $failedItems unavailable');
+      
+    } catch (e) {
+      AppLogger.error('Error reordering', error: e);
+      
+      // Close loading dialog if still open
+      if (mounted) {
+        Navigator.pop(context);
+        
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to reorder: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
   }
 }
 

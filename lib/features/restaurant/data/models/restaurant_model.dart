@@ -16,6 +16,7 @@ class RestaurantModel extends RestaurantEntity {
     required super.categories,
     super.isFreeDelivery,
     super.isPopular,
+    super.hasVegetarianOptions,
     required super.address,
     required super.distance,
   });
@@ -33,6 +34,7 @@ class RestaurantModel extends RestaurantEntity {
       categories: (json['categories'] as List<dynamic>).cast<String>(),
       isFreeDelivery: json['isFreeDelivery'] as bool? ?? false,
       isPopular: json['isPopular'] as bool? ?? false,
+      hasVegetarianOptions: json['hasVegetarianOptions'] as bool? ?? false,
       address: json['address'] as String,
       distance: (json['distance'] as num).toDouble(),
     );
@@ -51,6 +53,7 @@ class RestaurantModel extends RestaurantEntity {
       'categories': categories,
       'isFreeDelivery': isFreeDelivery,
       'isPopular': isPopular,
+      'hasVegetarianOptions': hasVegetarianOptions,
       'address': address,
       'distance': distance,
     };
@@ -69,6 +72,7 @@ class RestaurantModel extends RestaurantEntity {
       categories: categories,
       isFreeDelivery: isFreeDelivery,
       isPopular: isPopular,
+      hasVegetarianOptions: hasVegetarianOptions,
       address: address,
       distance: distance,
     );

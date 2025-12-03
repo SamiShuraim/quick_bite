@@ -69,12 +69,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     Row(
                       children: [
-                        Text(
-                          'Current Location',
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: AppConstants.fontWeightBold,
-                                  ),
+                        Flexible(
+                          child: Text(
+                            'Building 24, Academic Belt Road, Dhahran 31261',
+                            style:
+                                Theme.of(context).textTheme.titleSmall?.copyWith(
+                                      fontWeight: AppConstants.fontWeightBold,
+                                    ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
                         ),
                         const SizedBox(width: 4),
                         Icon(
@@ -82,6 +86,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: isDarkMode
                               ? AppColors.darkTextPrimary
                               : AppColors.textPrimary,
+                          size: 20,
                         ),
                       ],
                     ),
@@ -169,22 +174,40 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.tune, color: Colors.white),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const FilterScreen(),
+                      Stack(
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              color: AppColors.primary,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: IconButton(
+                              icon: const Icon(Icons.tune, color: Colors.white),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const FilterScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          if (restaurantProvider.selectedFilters.isNotEmpty ||
+                              restaurantProvider.maxDistance < 20)
+                            Positioned(
+                              right: 8,
+                              top: 8,
+                              child: Container(
+                                width: 8,
+                                height: 8,
+                                decoration: const BoxDecoration(
+                                  color: Colors.yellow,
+                                  shape: BoxShape.circle,
+                                ),
                               ),
-                            );
-                          },
-                        ),
+                            ),
+                        ],
                       ),
                     ],
                   ),
@@ -224,31 +247,124 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: SizedBox(height: AppConstants.mediumPadding),
               ),
 
-              // Section Header
+              // Section Header with filter indicator
               SliverToBoxAdapter(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppConstants.defaultPadding,
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Open Restaurants',
-                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              fontWeight: AppConstants.fontWeightBold,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Open Restaurants',
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  fontWeight: AppConstants.fontWeightBold,
+                                ),
+                          ),
+                          if (restaurantProvider.selectedFilters.isNotEmpty ||
+                              restaurantProvider.maxDistance < 20)
+                            TextButton.icon(
+                              onPressed: () {
+                                restaurantProvider.resetFilters();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Filters cleared'),
+                                    backgroundColor: AppColors.success,
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(
+                                Icons.clear,
+                                size: 16,
+                                color: AppColors.primary,
+                              ),
+                              label: const Text(
+                                'Clear Filters',
+                                style: TextStyle(
+                                  color: AppColors.primary,
+                                  fontWeight: AppConstants.fontWeightMedium,
+                                ),
+                              ),
                             ),
+                        ],
                       ),
-                      TextButton(
-                        onPressed: () {},
-                        child: const Text(
-                          'See All',
-                          style: TextStyle(
-                            color: AppColors.primary,
-                            fontWeight: AppConstants.fontWeightMedium,
+                      if (restaurantProvider.selectedFilters.isNotEmpty ||
+                          restaurantProvider.maxDistance < 20)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              if (restaurantProvider.selectedFilters.isNotEmpty)
+                                Wrap(
+                                  spacing: 6,
+                                  runSpacing: 6,
+                                  children: restaurantProvider.selectedFilters.map((filter) {
+                                    return Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: AppColors.primary.withOpacity(0.1),
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: AppColors.primary.withOpacity(0.3),
+                                        ),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            filter,
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              color: AppColors.primary,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          GestureDetector(
+                                            onTap: () {
+                                              final newFilters = Set<String>.from(
+                                                restaurantProvider.selectedFilters,
+                                              )..remove(filter);
+                                              restaurantProvider.applyAdvancedFilters(
+                                                minPrice: restaurantProvider.minPrice,
+                                                maxPrice: restaurantProvider.maxPrice,
+                                                maxDistance: restaurantProvider.maxDistance,
+                                                paymentMethods: restaurantProvider.selectedPaymentMethods,
+                                                filters: newFilters,
+                                              );
+                                            },
+                                            child: const Icon(
+                                              Icons.close,
+                                              size: 14,
+                                              color: AppColors.primary,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              const SizedBox(height: 8),
+                              Text(
+                                '${restaurantProvider.restaurants.length} restaurant${restaurantProvider.restaurants.length != 1 ? "s" : ""} found',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: isDarkMode
+                                          ? AppColors.darkTextSecondary
+                                          : AppColors.textSecondary,
+                                    ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
                     ],
                   ),
                 ),

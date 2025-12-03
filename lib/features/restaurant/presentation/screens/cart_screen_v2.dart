@@ -8,7 +8,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/widgets/custom_button.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../providers/cart_provider.dart';
-import 'payment_method_screen.dart';
+import 'unified_payment_screen.dart';
 
 class CartScreenV2 extends StatelessWidget {
   const CartScreenV2({super.key});
@@ -331,7 +331,7 @@ class CartScreenV2 extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '8502 Preston Rd. Inglewood, California',
+                          'Building 24, Academic Belt Road, Dhahran 31261',
                           style: TextStyle(
                             fontSize: 13,
                             color: isDarkMode ? Colors.white : Colors.black,
@@ -435,7 +435,9 @@ class CartScreenV2 extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const PaymentMethodScreen(),
+                      builder: (context) => UnifiedPaymentScreen(
+                        amount: cartProvider.total,
+                      ),
                     ),
                   );
                 },

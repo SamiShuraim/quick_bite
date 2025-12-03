@@ -19,6 +19,13 @@ class RestaurantProvider with ChangeNotifier {
   String? _errorMessage;
   String _selectedCategory = 'All';
   String _searchQuery = '';
+  
+  // Filter state
+  double _minPrice = 0;
+  double _maxPrice = 100;
+  double _maxDistance = 20;
+  Set<String> _selectedPaymentMethods = {};
+  Set<String> _selectedFilters = {};
 
   List<RestaurantEntity> get restaurants => _filteredRestaurants;
   List<MenuItemEntity> get menuItems => _menuItems;
@@ -27,6 +34,11 @@ class RestaurantProvider with ChangeNotifier {
   String? get errorMessage => _errorMessage;
   String get selectedCategory => _selectedCategory;
   String get searchQuery => _searchQuery;
+  double get minPrice => _minPrice;
+  double get maxPrice => _maxPrice;
+  double get maxDistance => _maxDistance;
+  Set<String> get selectedPaymentMethods => _selectedPaymentMethods;
+  Set<String> get selectedFilters => _selectedFilters;
 
   List<String> get categories => [
         'All',
@@ -86,6 +98,7 @@ class RestaurantProvider with ChangeNotifier {
         categories: ['Asian', 'Spicy'],
         isFreeDelivery: true,
         isPopular: true,
+        hasVegetarianOptions: true,
         address: '123 Main St, Downtown',
         distance: 1.2,
       ),
@@ -101,6 +114,7 @@ class RestaurantProvider with ChangeNotifier {
         categories: ['Italian', 'Fine Dining'],
         isFreeDelivery: false,
         isPopular: false,
+        hasVegetarianOptions: true,
         address: '456 Oak Ave, Midtown',
         distance: 2.5,
       ),
@@ -116,6 +130,7 @@ class RestaurantProvider with ChangeNotifier {
         categories: ['Burger', 'Fast Food'],
         isFreeDelivery: true,
         isPopular: true,
+        hasVegetarianOptions: true,
         address: '789 Burger Lane',
         distance: 0.8,
       ),
@@ -131,6 +146,7 @@ class RestaurantProvider with ChangeNotifier {
         categories: ['Pizza', 'Italian'],
         isFreeDelivery: false,
         isPopular: true,
+        hasVegetarianOptions: true,
         address: '321 Pizza Plaza',
         distance: 3.2,
       ),
@@ -146,6 +162,7 @@ class RestaurantProvider with ChangeNotifier {
         categories: ['Mexican', 'Tacos'],
         isFreeDelivery: true,
         isPopular: false,
+        hasVegetarianOptions: true,
         address: '654 Taco Street',
         distance: 1.8,
       ),
@@ -161,6 +178,7 @@ class RestaurantProvider with ChangeNotifier {
         categories: ['Asian', 'Japanese'],
         isFreeDelivery: false,
         isPopular: true,
+        hasVegetarianOptions: true,
         address: '987 Sushi Ave',
         distance: 4.1,
       ),
@@ -177,6 +195,18 @@ class RestaurantProvider with ChangeNotifier {
       AppLogger.error('Error loading menu items', error: e);
       // Return dummy data as fallback
       return _getDummyMenuItems(restaurantId);
+    }
+  }
+
+  Future<MenuItemEntity> getMenuItemById(String menuItemId) async {
+    try {
+      AppLogger.info('Fetching menu item by ID: $menuItemId');
+      final menuItem = await repository.getMenuItemById(menuItemId);
+      AppLogger.info('Loaded menu item: ${menuItem.name}');
+      return menuItem;
+    } catch (e) {
+      AppLogger.error('Error loading menu item by ID', error: e);
+      rethrow;
     }
   }
 
@@ -396,12 +426,56 @@ class RestaurantProvider with ChangeNotifier {
 
   void _applyFilters() {
     _filteredRestaurants = _restaurants.where((restaurant) {
+      // Category filter
       final matchesCategory = _selectedCategory == 'All' ||
           restaurant.categories.contains(_selectedCategory);
+      
+      // Search filter
       final matchesSearch = _searchQuery.isEmpty ||
           restaurant.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           restaurant.description.toLowerCase().contains(_searchQuery.toLowerCase());
-      return matchesCategory && matchesSearch;
+      
+      // Price range filter - check if restaurant's delivery fee is within range
+      // (In a real app, you might filter by average menu item price)
+      final matchesPriceRange = restaurant.deliveryFee >= _minPrice && 
+                                 restaurant.deliveryFee <= _maxPrice;
+      
+      // Distance filter
+      final matchesDistance = restaurant.distance <= _maxDistance;
+      
+      // Free delivery filter
+      final matchesFreeDelivery = !_selectedFilters.contains('Free Delivery') ||
+          restaurant.isFreeDelivery;
+      
+      // Popular filter
+      final matchesPopular = !_selectedFilters.contains('Popular') ||
+          restaurant.isPopular;
+      
+      // Top rated filter
+      final matchesTopRated = !_selectedFilters.contains('Top Rated') ||
+          restaurant.rating >= 4.5;
+      
+      // Fast delivery filter
+      final matchesFastDelivery = !_selectedFilters.contains('Fast Delivery') ||
+          restaurant.deliveryTime <= 25;
+      
+      // Vegetarian filter - now uses the hasVegetarianOptions field from backend
+      final matchesVegetarian = !_selectedFilters.contains('Vegetarian') ||
+          restaurant.hasVegetarianOptions;
+      
+      // Open now filter (assume all restaurants are open)
+      final matchesOpenNow = !_selectedFilters.contains('Open Now') || true;
+      
+      return matchesCategory && 
+             matchesSearch && 
+             matchesPriceRange &&
+             matchesDistance &&
+             matchesFreeDelivery &&
+             matchesPopular &&
+             matchesTopRated &&
+             matchesFastDelivery &&
+             matchesVegetarian &&
+             matchesOpenNow;
     }).toList();
     notifyListeners();
   }
@@ -435,6 +509,40 @@ class RestaurantProvider with ChangeNotifier {
   void clearSelectedRestaurant() {
     _selectedRestaurant = null;
     notifyListeners();
+  }
+  
+  void applyAdvancedFilters({
+    required double minPrice,
+    required double maxPrice,
+    required double maxDistance,
+    required Set<String> paymentMethods,
+    required Set<String> filters,
+  }) {
+    AppLogger.userAction('Advanced Filters Applied', details: {
+      'minPrice': minPrice,
+      'maxPrice': maxPrice,
+      'maxDistance': maxDistance,
+      'paymentMethods': paymentMethods.toList(),
+      'filters': filters.toList(),
+    });
+    
+    _minPrice = minPrice;
+    _maxPrice = maxPrice;
+    _maxDistance = maxDistance;
+    _selectedPaymentMethods = paymentMethods;
+    _selectedFilters = filters;
+    
+    _applyFilters();
+  }
+  
+  void resetFilters() {
+    AppLogger.userAction('Filters Reset');
+    _minPrice = 0;
+    _maxPrice = 100;
+    _maxDistance = 20;
+    _selectedPaymentMethods = {};
+    _selectedFilters = {};
+    _applyFilters();
   }
 }
 

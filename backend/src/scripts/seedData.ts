@@ -1628,7 +1628,12 @@ const seedDatabase = async () => {
 
       await MenuItem.insertMany(menuItemsWithData);
       totalMenuItems += menuItemsWithData.length;
-      logger.info(`  ✓ Created ${menuItemsWithData.length} menu items for ${restaurant.name}`);
+      
+      // Update restaurant with hasVegetarianOptions based on menu items
+      const hasVegetarianOptions = menuItemsWithData.some((item) => item.isVegetarian);
+      await Restaurant.findByIdAndUpdate(restaurant._id, { hasVegetarianOptions });
+      
+      logger.info(`  ✓ Created ${menuItemsWithData.length} menu items for ${restaurant.name}${hasVegetarianOptions ? ' (has vegetarian options)' : ''}`);
     }
 
     logger.info('');

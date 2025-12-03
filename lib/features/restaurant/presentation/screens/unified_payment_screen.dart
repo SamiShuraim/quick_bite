@@ -1,5 +1,5 @@
-/// Payment Method Screen for QuickBite application
-/// Follows new design mockup
+/// Unified Payment Screen for QuickBite application
+/// Can be used for both payment method management (profile) and checkout
 library;
 
 import 'package:flutter/material.dart';
@@ -16,27 +16,25 @@ import '../../domain/entities/saved_card_entity.dart';
 import 'add_card_screen.dart';
 import 'payment_success_screen.dart';
 
-class PaymentMethodScreen extends StatefulWidget {
-  const PaymentMethodScreen({super.key});
+class UnifiedPaymentScreen extends StatefulWidget {
+  /// If amount is provided, this is checkout mode with bottom payment section
+  /// If amount is null, this is management mode (from profile)
+  final double? amount;
+  
+  const UnifiedPaymentScreen({
+    super.key,
+    this.amount,
+  });
 
   @override
-  State<PaymentMethodScreen> createState() => _PaymentMethodScreenState();
+  State<UnifiedPaymentScreen> createState() => _UnifiedPaymentScreenState();
 }
 
-class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
+class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
   String _selectedPaymentMethod = 'cash';
-  bool _isLoading = false;
   SavedCardEntity? _selectedCard;
+  bool _isLoading = false;
 
-  @override
-  void initState() {
-    super.initState();
-    // Fetch saved cards on init
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<PaymentProvider>().fetchSavedCards();
-    });
-  }
-  
   final List<Map<String, dynamic>> _paymentMethods = [
     {
       'id': 'cash',
@@ -51,24 +49,49 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       'color': const Color(0xFF1A1F71),
     },
     {
-      'id': 'mastercard',
-      'name': 'Mastercard',
-      'logo': 'assets/mastercard.png',
-      'color': const Color(0xFFEB001B),
-    },
-    {
-      'id': 'paypal',
-      'name': 'Paypal',
-      'logo': 'assets/paypal.png',
-      'color': const Color(0xFF003087),
+      'id': 'mada',
+      'name': 'Mada',
+      'logo': 'assets/mada.png',
+      'color': const Color(0xFF1B5BA1),
     },
   ];
+
+  bool get isCheckoutMode => widget.amount != null;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadPaymentMethods();
+    });
+  }
+
+  String _getCardLogoUrl(String cardType) {
+    switch (cardType.toLowerCase()) {
+      case 'visa':
+        return 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/2560px-Visa_Inc._logo.svg.png';
+      case 'mada':
+        // Using a reliable CDN URL for Mada logo
+        return 'https://cdn.salla.network/images/logo/mada-logo.png';
+      default:
+        return '';
+    }
+  }
+
+  Future<void> _loadPaymentMethods() async {
+    final paymentProvider = Provider.of<PaymentProvider>(context, listen: false);
+    try {
+      await paymentProvider.fetchSavedCards();
+    } catch (e) {
+      AppLogger.error('Error loading payment methods', error: e);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    final cartProvider = Provider.of<CartProvider>(context);
-
+    final paymentProvider = Provider.of<PaymentProvider>(context);
+    
     return Scaffold(
       backgroundColor: isDarkMode ? const Color(0xFF1E1E2E) : const Color(0xFFF5F5F5),
       appBar: AppBar(
@@ -83,7 +106,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Payment',
+          isCheckoutMode ? 'Payment' : 'Payment Methods',
           style: TextStyle(
             color: isDarkMode ? Colors.white : Colors.black,
             fontSize: 18,
@@ -95,90 +118,100 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       body: Column(
         children: [
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Payment Methods
-                  Row(
-                    children: _paymentMethods.map((method) {
-                      return Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 12),
-                          child: _buildPaymentMethodCard(
-                            method: method,
-                            isSelected: _selectedPaymentMethod == method['id'],
-                            isDarkMode: isDarkMode,
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  
-                  const SizedBox(height: 24),
-                  
-                  // Card Section
-                  _buildCardSection(isDarkMode),
-                  
-                  const SizedBox(height: 24),
-                  
-                  // Add Card Button
-                  InkWell(
-                    onTap: () async {
-                      final navigator = Navigator.of(context);
-                      final paymentProvider = context.read<PaymentProvider>();
-                      
-                      final result = await navigator.push(
-                        MaterialPageRoute(
-                          builder: (context) => const AddCardScreen(),
-                        ),
-                      );
-                      
-                      // Refresh cards if card was added
-                      if (result == true && mounted) {
-                        await paymentProvider.fetchSavedCards();
-                      }
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: AppColors.primary.withOpacity(0.3),
-                          width: 2,
-                          style: BorderStyle.solid,
-                        ),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+            child: RefreshIndicator(
+              onRefresh: _loadPaymentMethods,
+              child: paymentProvider.isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : SingleChildScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Icon(
-                            Icons.add,
-                            color: AppColors.primary,
-                            size: 20,
+                          // Payment Methods
+                          Row(
+                            children: _paymentMethods.map((method) {
+                              return Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.only(right: 12),
+                                  child: _buildPaymentMethodCard(
+                                    method: method,
+                                    isSelected: _selectedPaymentMethod == method['id'],
+                                    isDarkMode: isDarkMode,
+                                  ),
+                                ),
+                              );
+                            }).toList(),
                           ),
-                          const SizedBox(width: 8),
-                          Text(
-                            'ADD CARD',
-                            style: TextStyle(
-                              color: AppColors.primary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 1.2,
+                          
+                          const SizedBox(height: 24),
+                          
+                          // Card Section
+                          _buildCardSection(isDarkMode, paymentProvider),
+                          
+                  const SizedBox(height: 24),
+                  
+                  // Add Card Button - only show for card payment methods
+                  if (_selectedPaymentMethod != 'cash')
+                    InkWell(
+                      onTap: () async {
+                        final navigator = Navigator.of(context);
+                        
+                        // Pass the selected card type
+                        final result = await navigator.push(
+                          MaterialPageRoute(
+                            builder: (context) => AddCardScreen(
+                              cardType: _selectedPaymentMethod,
                             ),
                           ),
+                        );
+                        
+                        // Refresh cards if card was added
+                        if (result == true && mounted) {
+                          await paymentProvider.fetchSavedCards();
+                        }
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: AppColors.primary.withOpacity(0.3),
+                            width: 2,
+                            style: BorderStyle.solid,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add,
+                              color: AppColors.primary,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'ADD CARD',
+                              style: TextStyle(
+                                color: AppColors.primary,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 1.2,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                         ],
                       ),
                     ),
-                  ),
-                ],
-              ),
             ),
           ),
           
-          // Bottom Section
-          _buildBottomSection(context, isDarkMode, cartProvider),
+          // Bottom Section - only show in checkout mode
+          if (isCheckoutMode)
+            _buildBottomSection(context, isDarkMode),
         ],
       ),
     );
@@ -231,6 +264,49 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                   size: 24,
                 ),
               )
+            else if (method['logo'] != null)
+              Container(
+                width: 40,
+                height: 40,
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: method['id'] == 'mada' 
+                      ? const Color(0xFF1B5BA1) 
+                      : Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(
+                    color: Colors.grey[300]!,
+                  ),
+                ),
+                child: method['id'] == 'visa'
+                    ? Image.network(
+                        _getCardLogoUrl(method['id']),
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Center(
+                            child: Text(
+                              'V',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: method['color'],
+                              ),
+                            ),
+                          );
+                        },
+                      )
+                    : Center(
+                        child: Text(
+                          'mada',
+                          style: const TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.white,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
+              )
             else
               Container(
                 width: 40,
@@ -268,7 +344,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     );
   }
 
-  Widget _buildCardSection(bool isDarkMode) {
+  Widget _buildCardSection(bool isDarkMode, PaymentProvider paymentProvider) {
     if (_selectedPaymentMethod == 'cash') {
       return Container(
         padding: const EdgeInsets.all(20),
@@ -321,23 +397,21 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       );
     }
     
-    // Card display - use saved cards
-    final paymentProvider = context.watch<PaymentProvider>();
-    SavedCardEntity? card;
+    // Filter cards by selected payment method (case-insensitive)
+    List<SavedCardEntity> matchingCards = paymentProvider.savedCards
+        .where((c) {
+          final cardBrandLower = c.cardBrand.toLowerCase().trim();
+          final selectedMethodLower = _selectedPaymentMethod.toLowerCase().trim();
+          AppLogger.debug('Comparing card brand: "$cardBrandLower" with selected: "$selectedMethodLower"');
+          return cardBrandLower == selectedMethodLower;
+        })
+        .toList();
     
-    try {
-      card = paymentProvider.savedCards.firstWhere(
-        (c) => c.cardBrand == _selectedPaymentMethod,
-      );
-    } catch (e) {
-      // If no card matches the selected method, use default or first available
-      card = paymentProvider.defaultCard ?? 
-             (paymentProvider.savedCards.isNotEmpty ? paymentProvider.savedCards.first : null);
-    }
+    AppLogger.debug('Found ${matchingCards.length} matching cards for $_selectedPaymentMethod');
     
-    _selectedCard = card;
-    
-    if (card == null) {
+    // If no matching cards, show empty state
+    if (matchingCards.isEmpty) {
+      _selectedCard = null;
       return Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
@@ -377,23 +451,60 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       );
     }
     
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFFFF7622), Color(0xFFFF9D5C)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withOpacity(0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
+    // Set the first card as selected if none is selected or current selection is not in matching cards
+    if (_selectedCard == null || !matchingCards.any((c) => c.id == _selectedCard!.id)) {
+      // Try to get default card of this type first
+      try {
+        _selectedCard = matchingCards.firstWhere((c) => c.isDefault);
+      } catch (e) {
+        // If no default, just use the first one
+        _selectedCard = matchingCards.first;
+      }
+    }
+    
+    // Build card displays for all matching cards
+    return Column(
+      children: matchingCards.map((card) {
+        final isSelected = _selectedCard?.id == card.id;
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 12),
+          child: _buildCardDisplay(card, isDarkMode, paymentProvider, isSelected),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildCardDisplay(SavedCardEntity card, bool isDarkMode, PaymentProvider paymentProvider, bool isSelected) {
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedCard = card;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: isSelected 
+                ? [const Color(0xFFFF7622), const Color(0xFFFF9D5C)]
+                : [Colors.grey[600]!, Colors.grey[500]!],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-        ],
-      ),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : Colors.transparent,
+            width: 2,
+          ),
+          boxShadow: [
+            if (isSelected)
+              BoxShadow(
+                color: AppColors.primary.withOpacity(0.3),
+                blurRadius: 15,
+                offset: const Offset(0, 8),
+              ),
+          ],
+        ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -408,35 +519,79 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              if (card.isDefault)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withOpacity(0.2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: const Row(
-                    children: [
-                      Icon(
-                        Icons.check_circle,
+              Row(
+                children: [
+                  if (card.isDefault)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 6,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle,
+                            color: Colors.white,
+                            size: 16,
+                          ),
+                          SizedBox(width: 4),
+                          Text(
+                            'Default',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  // Only show menu in management mode (not checkout)
+                  if (!isCheckoutMode) ...[
+                    const SizedBox(width: 8),
+                    PopupMenuButton<String>(
+                      icon: const Icon(
+                        Icons.more_vert,
                         color: Colors.white,
-                        size: 16,
                       ),
-                      SizedBox(width: 4),
-                      Text(
-                        'Default',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
+                      onSelected: (value) async {
+                        if (value == 'default') {
+                          await _handleSetDefault(card.id, paymentProvider);
+                        } else if (value == 'delete') {
+                          await _handleDeleteCard(card.id, paymentProvider);
+                        }
+                      },
+                      itemBuilder: (context) => [
+                        if (!card.isDefault)
+                          const PopupMenuItem(
+                            value: 'default',
+                            child: Row(
+                              children: [
+                                Icon(Icons.check_circle_outline),
+                                SizedBox(width: 8),
+                                Text('Set as Default'),
+                              ],
+                            ),
+                          ),
+                        const PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            children: [
+                              Icon(Icons.delete_outline, color: Colors.red),
+                              SizedBox(width: 8),
+                              Text('Remove', style: TextStyle(color: Colors.red)),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
             ],
           ),
           const SizedBox(height: 24),
@@ -499,14 +654,13 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           ),
         ],
       ),
+      ),
     );
   }
 
-  Widget _buildBottomSection(
-    BuildContext context,
-    bool isDarkMode,
-    CartProvider cartProvider,
-  ) {
+  Widget _buildBottomSection(BuildContext context, bool isDarkMode) {
+    final cartProvider = Provider.of<CartProvider>(context);
+    
     return Container(
       decoration: BoxDecoration(
         color: isDarkMode ? const Color(0xFF2A2A3E) : Colors.white,
@@ -541,7 +695,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                 Row(
                   children: [
                     Text(
-                      CurrencyFormatter.format(cartProvider.total),
+                      CurrencyFormatter.format(widget.amount!),
                       style: TextStyle(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
@@ -609,6 +763,75 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _handleSetDefault(String cardId, PaymentProvider paymentProvider) async {
+    try {
+      await paymentProvider.setDefaultCard(cardId);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Default card updated'),
+            backgroundColor: Colors.green,
+          ),
+        );
+        // Reload to update UI
+        await _loadPaymentMethods();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to update default card: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _handleDeleteCard(String cardId, PaymentProvider paymentProvider) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Remove Card'),
+        content: const Text('Are you sure you want to remove this card?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('CANCEL'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(foregroundColor: Colors.red),
+            child: const Text('REMOVE'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true) {
+      try {
+        await paymentProvider.deleteSavedCard(cardId);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Card removed successfully'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to remove card: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
   }
 
   Future<void> _showOrderConfirmation(BuildContext context) async {
@@ -692,14 +915,14 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       
       // Prepare delivery address (using mock data - in real app, get from user profile or input)
       final deliveryAddress = {
-        'street': '123 Main Street',
-        'city': 'San Francisco',
-        'state': 'CA',
-        'zipCode': '94102',
-        'country': 'USA',
-        'fullAddress': '123 Main Street, San Francisco, CA 94102',
-        'latitude': 37.7749,
-        'longitude': -122.4194,
+        'street': 'Building 24, Academic Belt Road',
+        'city': 'Dhahran',
+        'state': 'Eastern Province',
+        'zipCode': '31261',
+        'country': 'Saudi Arabia',
+        'fullAddress': 'Building 24, Academic Belt Road, Dhahran 31261',
+        'latitude': 26.3045,
+        'longitude': 50.1437,
       };
       
       // Prepare payment details

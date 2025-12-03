@@ -494,8 +494,8 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
       child: Row(
         children: [
           Container(
-            width: 50,
-            height: 50,
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
               color: AppColors.primary.withValues(alpha: 0.2),
               shape: BoxShape.circle,
@@ -504,7 +504,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
               child: Text(
                 driverName[0].toUpperCase(),
                 style: const TextStyle(
-                  fontSize: 24,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: AppColors.primary,
                 ),
@@ -583,26 +583,27 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
             return Padding(
               padding: const EdgeInsets.only(bottom: 12),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Container(
-                    width: 16,
-                    height: 16,
+                    width: 40,
+                    height: 40,
                     decoration: BoxDecoration(
                       color: AppColors.primary.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: Center(
                       child: Text(
                         '${item.quantity}',
                         style: const TextStyle(
-                          fontSize: 10,
+                          fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: AppColors.primary,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 16),
                   Expanded(
                     child: Text(
                       item.name,
@@ -656,13 +657,14 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
           ),
           const SizedBox(height: 12),
           Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   color: AppColors.primary.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: const Icon(
                   Icons.location_on,
@@ -670,10 +672,10 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                   size: 20,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 16),
               Expanded(
                 child: Text(
-                  _currentOrder.deliveryAddress.fullAddress,
+                  'Building 24, Academic Belt Road, Dhahran 31261',
                   style: TextStyle(
                     fontSize: 14,
                     color: isDarkMode ? Colors.grey[300] : Colors.grey[700],

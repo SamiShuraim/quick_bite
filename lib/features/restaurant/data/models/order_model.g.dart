@@ -29,6 +29,7 @@ OrderModel _$OrderModelFromJson(Map<String, dynamic> json) => OrderModel(
     json['estimatedDeliveryTime'] as String,
   ),
   specialInstructions: json['specialInstructions'] as String?,
+  driverName: json['driverName'] as String?,
   createdAt: DateTime.parse(json['createdAt'] as String),
   updatedAt: DateTime.parse(json['updatedAt'] as String),
 );
@@ -49,6 +50,7 @@ Map<String, dynamic> _$OrderModelToJson(OrderModel instance) =>
       'status': instance.status,
       'estimatedDeliveryTime': instance.estimatedDeliveryTime.toIso8601String(),
       'specialInstructions': instance.specialInstructions,
+      'driverName': instance.driverName,
       'createdAt': instance.createdAt.toIso8601String(),
       'updatedAt': instance.updatedAt.toIso8601String(),
     };
@@ -142,3 +144,4 @@ Map<String, dynamic> _$PaymentDetailsModelToJson(
   'paymentStatus': instance.paymentStatus,
   'paidAt': instance.paidAt?.toIso8601String(),
 };
+
