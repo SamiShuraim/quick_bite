@@ -114,12 +114,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // Theme Toggle
                     _buildSettingItem(
                       context,
-                      icon: themeProvider.themeMode == ThemeMode.dark
+                      icon: isDarkMode
                           ? Icons.dark_mode
                           : Icons.light_mode,
                       title: 'Dark Mode',
                       trailing: Switch(
-                        value: themeProvider.themeMode == ThemeMode.dark,
+                        value: isDarkMode,
                         onChanged: (value) {
                           themeProvider.setThemeMode(
                             value ? ThemeMode.dark : ThemeMode.light,
