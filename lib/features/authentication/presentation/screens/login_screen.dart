@@ -30,6 +30,77 @@ class _LoginScreenState extends State<LoginScreen> {
   void initState() {
     super.initState();
     AppLogger.lifecycle('LoginScreen', 'initState');
+    
+    // Show test account dialog and prepopulate fields after frame is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showTestAccountDialog();
+    });
+  }
+  
+  void _showTestAccountDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          title: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.info_outline,
+                  color: AppColors.primary,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Text(
+                  'Test Account',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+          content: const Text(
+            'For testing simplicity, an account we used throughout the whole development journey is provided. However, if you want to create your own account, you are free to do so.',
+            style: TextStyle(fontSize: 15, height: 1.5),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                // Prepopulate the fields after dialog is dismissed
+                _emailController.text = 'sam.shuraim@gmail.com';
+                _passwordController.text = '12345678*&Ss';
+              },
+              style: TextButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'OK',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -137,11 +208,6 @@ class _LoginScreenState extends State<LoginScreen> {
       context,
       MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
     );
-  }
-
-  void _skipAuth() {
-    AppLogger.info('Skipping authentication for testing');
-    Navigator.pushReplacementNamed(context, '/home');
   }
 
   @override
@@ -289,21 +355,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 const SizedBox(height: AppConstants.mediumPadding),
 
-                // Skip Auth Button (for testing)
-                Center(
-                  child: TextButton(
-                    onPressed: _isLoading ? null : _skipAuth,
-                    child: Text(
-                      'Skip Authentication (Testing)',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: isDarkMode
-                                ? AppColors.darkTextSecondary
-                                : AppColors.textSecondary,
-                            decoration: TextDecoration.underline,
-                          ),
-                    ),
-                  ),
-                ),
               ],
             ),
           ),

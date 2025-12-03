@@ -8,6 +8,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/app_logger.dart';
+import '../../../../core/services/backend_health_service.dart';
+import 'backend_loading_screen.dart';
 import 'onboarding_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -22,17 +24,23 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
+  late BackendHealthService _healthService;
+  bool _isDisposed = false;
+  bool _hasNavigated = false;
 
   @override
   void initState() {
     super.initState();
     AppLogger.lifecycle('SplashScreen', 'initState');
 
+    _healthService = BackendHealthService();
     _initializeAnimations();
     
     // Defer navigation until after the first frame to ensure context is available
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _navigateToOnboarding();
+      if (!_isDisposed) {
+        _navigateToOnboarding();
+      }
     });
   }
 
@@ -55,7 +63,7 @@ class _SplashScreenState extends State<SplashScreen>
             await precacheImage(CachedNetworkImageProvider(url), context);
           } catch (e) {
             AppLogger.error('Failed to preload image: $url', error: e);
-            // Continue even if one image fails
+            // Continue even if one image fails (e.g., in test environment)
           }
         }),
       );
@@ -63,7 +71,7 @@ class _SplashScreenState extends State<SplashScreen>
       AppLogger.info('Onboarding images preloaded successfully');
     } catch (e) {
       AppLogger.error('Failed to preload onboarding images', error: e);
-      // Continue even if preloading fails
+      // Continue even if preloading fails (e.g., in test environment)
     }
   }
 
@@ -91,38 +99,92 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _navigateToOnboarding() async {
-    // Wait for minimum splash duration and image preloading
-    await Future.wait([
-      Future.delayed(const Duration(seconds: AppConstants.splashDurationSeconds)),
-      _preloadOnboardingImages(),
-    ]);
+    try {
+      // Wait for minimum splash duration and image preloading in parallel
+      final splashFuture = Future.delayed(const Duration(seconds: AppConstants.splashDurationSeconds));
+      final imagesFuture = _preloadOnboardingImages();
+      
+      await Future.wait([splashFuture, imagesFuture]);
 
-    if (mounted) {
-      AppLogger.navigation('SplashScreen', 'OnboardingScreen');
-      Navigator.pushReplacement(
-        context,
-        PageRouteBuilder(
-          pageBuilder: (context, animation, secondaryAnimation) =>
-              const OnboardingScreen(),
-          transitionsBuilder:
-              (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
-          transitionDuration: const Duration(
-            milliseconds: AppConstants.pageTransitionMilliseconds,
+      if (!mounted || _isDisposed || _hasNavigated) return;
+
+      // Check backend health
+      AppLogger.info('Performing backend health check...');
+      final isHealthy = await _healthService.quickHealthCheck();
+      AppLogger.info('Backend health check result: $isHealthy');
+
+      if (!mounted || _isDisposed || _hasNavigated) return;
+
+      _hasNavigated = true;
+
+      if (isHealthy) {
+        // Backend is ready, proceed to onboarding
+        AppLogger.info('Backend is healthy, navigating to onboarding');
+        _navigateToScreen(const OnboardingScreen());
+      } else {
+        // Backend is starting (cold start), show loading screen
+        AppLogger.warning('Backend is not responding, showing loading screen');
+        _navigateToScreen(
+          BackendLoadingScreen(
+            onBackendReady: () {
+              if (mounted && !_isDisposed && !_hasNavigated) {
+                Navigator.pushReplacement(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        const OnboardingScreen(),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                      return FadeTransition(
+                        opacity: animation,
+                        child: child,
+                      );
+                    },
+                    transitionDuration: const Duration(
+                      milliseconds: AppConstants.pageTransitionMilliseconds,
+                    ),
+                  ),
+                );
+              }
+            },
           ),
-        ),
-      );
+        );
+      }
+    } catch (e, stackTrace) {
+      AppLogger.error('Error during navigation', error: e, stackTrace: stackTrace);
+      // On error, just proceed to onboarding
+      if (mounted && !_isDisposed && !_hasNavigated) {
+        _hasNavigated = true;
+        _navigateToScreen(const OnboardingScreen());
+      }
     }
+  }
+
+  void _navigateToScreen(Widget screen) {
+    AppLogger.navigation('SplashScreen', screen.runtimeType.toString());
+    Navigator.pushReplacement(
+      context,
+      PageRouteBuilder(
+        pageBuilder: (context, animation, secondaryAnimation) => screen,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(
+            opacity: animation,
+            child: child,
+          );
+        },
+        transitionDuration: const Duration(
+          milliseconds: AppConstants.pageTransitionMilliseconds,
+        ),
+      ),
+    );
   }
 
   @override
   void dispose() {
+    _isDisposed = true;
     AppLogger.lifecycle('SplashScreen', 'dispose');
     _animationController.dispose();
+    _healthService.dispose();
     super.dispose();
   }
 

@@ -14,6 +14,9 @@ class ApiConstants {
   static const String apiVersion = 'v1';
   static const String apiBasePath = '/api/$apiVersion';
 
+  // Health Check Endpoint
+  static const String healthEndpoint = '/health';
+
   // Authentication Endpoints
   static const String authBasePath = '$apiBasePath/auth';
   static const String loginEndpoint = '$authBasePath/login';

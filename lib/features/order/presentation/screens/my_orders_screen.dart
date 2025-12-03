@@ -220,7 +220,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        order.restaurantId, // Would be restaurant name in real app
+                        order.restaurantName,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               color: isDarkMode
                                   ? AppColors.darkTextSecondary
