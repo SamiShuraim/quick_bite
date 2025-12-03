@@ -393,33 +393,13 @@ class CartScreenV2 extends StatelessWidget {
                     color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
                   ),
                 ),
-                Row(
-                  children: [
-                    Text(
-                      CurrencyFormatter.format(cartProvider.total),
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: isDarkMode ? Colors.white : Colors.black,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Icon(
-                        Icons.arrow_forward,
-                        color: Colors.white,
-                        size: 16,
-                      ),
-                    ),
-                  ],
+                Text(
+                  CurrencyFormatter.format(cartProvider.total),
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: isDarkMode ? Colors.white : Colors.black,
+                  ),
                 ),
               ],
             ),

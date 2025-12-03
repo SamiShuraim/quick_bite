@@ -8,6 +8,7 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/services/backend_health_service.dart';
 import '../../../../core/utils/app_logger.dart';
+import 'onboarding_screen.dart';
 
 class BackendLoadingScreen extends StatefulWidget {
   final VoidCallback onBackendReady;
@@ -84,7 +85,25 @@ class _BackendLoadingScreenState extends State<BackendLoadingScreen>
         if (mounted) {
           // Small delay for smooth transition
           await Future.delayed(const Duration(milliseconds: 500));
-          widget.onBackendReady();
+          
+          if (mounted) {
+            // Navigate directly using this screen's context
+            Navigator.pushReplacement(
+              context,
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) =>
+                    const OnboardingScreen(),
+                transitionsBuilder:
+                    (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(
+                    opacity: animation,
+                    child: child,
+                  );
+                },
+                transitionDuration: const Duration(milliseconds: 500),
+              ),
+            );
+          }
         }
       } else if (_attemptCount >= 30) {
         // After 5 minutes (30 attempts), show error
