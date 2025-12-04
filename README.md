@@ -32,7 +32,7 @@ If not installed, follow the [official Flutter installation guide](https://docs.
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/yourusername/quick_bite.git
+   git clone https://github.com/SamiShuraim/quick_bite.git
    cd quick_bite
    ```
 
