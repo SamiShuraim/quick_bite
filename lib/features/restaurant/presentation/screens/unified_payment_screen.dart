@@ -51,7 +51,7 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
     {
       'id': 'mada',
       'name': 'Mada',
-      'logo': 'assets/mada.png',
+      'logo': 'assets/mada_logo.png',
       'color': const Color(0xFF1B5BA1),
     },
   ];
@@ -295,25 +295,22 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
                           );
                         },
                       )
-                    : Padding(
-                        padding: const EdgeInsets.all(4),
-                        child: Image.asset(
-                          'assets/mada_logo.png',
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Center(
-                              child: Text(
-                                'mada',
-                                style: const TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w900,
-                                  color: Colors.white,
-                                  letterSpacing: 0.5,
-                                ),
+                    : Image.asset(
+                        'assets/mada_logo.png',
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Center(
+                            child: Text(
+                              'mada',
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                                letterSpacing: 0.5,
                               ),
-                            );
-                          },
-                        ),
+                            ),
+                          );
+                        },
                       ),
               )
             else
