@@ -295,15 +295,24 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
                           );
                         },
                       )
-                    : Center(
-                        child: Text(
-                          'mada',
-                          style: const TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.w900,
-                            color: Colors.white,
-                            letterSpacing: 0.5,
-                          ),
+                    : Padding(
+                        padding: const EdgeInsets.all(4),
+                        child: Image.asset(
+                          'assets/mada_logo.png',
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Center(
+                              child: Text(
+                                'mada',
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.white,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ),
               )
@@ -692,33 +701,13 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
                     color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
                   ),
                 ),
-                Row(
-                  children: [
-                    Text(
-                      CurrencyFormatter.format(widget.amount!),
-                      style: TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: isDarkMode ? Colors.white : Colors.black,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: const Icon(
-                        Icons.arrow_forward,
-                        color: Colors.white,
-                        size: 16,
-                      ),
-                    ),
-                  ],
+                Text(
+                  CurrencyFormatter.format(widget.amount!),
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: isDarkMode ? Colors.white : Colors.black,
+                  ),
                 ),
               ],
             ),
