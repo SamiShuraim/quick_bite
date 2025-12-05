@@ -9,11 +9,15 @@ import '../../../../core/utils/app_logger.dart';
 
 class CartProvider with ChangeNotifier {
   final List<CartItem> _items = [];
+  String? _restaurantId;
+  String? _restaurantName;
   static const double taxRate = 0.15; // 15% VAT (Saudi Arabia)
 
   List<CartItem> get items => _items;
   int get itemCount => _items.fold(0, (sum, item) => sum + item.quantity);
   bool get isEmpty => _items.isEmpty;
+  String? get restaurantId => _restaurantId;
+  String? get restaurantName => _restaurantName;
 
   double get subtotal {
     return _items.fold(0.0, (sum, item) => sum + item.totalPrice);
@@ -42,10 +46,31 @@ class CartProvider with ChangeNotifier {
     );
   }
 
+  /// Check if cart has items from a different restaurant
+  bool hasDifferentRestaurant(String restaurantId) {
+    return _items.isNotEmpty && _restaurantId != null && _restaurantId != restaurantId;
+  }
+
   void addItem({
     required MenuItemEntity menuItem,
+    required String restaurantId,
+    required String restaurantName,
     List<SelectedCustomization> customizations = const [],
+    bool clearExisting = false,
   }) {
+    // If clearing existing items from different restaurant
+    if (clearExisting) {
+      _items.clear();
+      _restaurantId = null;
+      _restaurantName = null;
+    }
+
+    // Set restaurant info if cart is empty
+    if (_items.isEmpty) {
+      _restaurantId = restaurantId;
+      _restaurantName = restaurantName;
+    }
+
     final customizationPrice = customizations.fold<double>(
       0.0,
       (sum, custom) => sum + custom.selectedChoices.fold<double>(
@@ -82,6 +107,8 @@ class CartProvider with ChangeNotifier {
       'itemName': menuItem.name,
       'price': menuItem.price,
       'cartSize': _items.length,
+      'restaurantId': restaurantId,
+      'restaurantName': restaurantName,
     });
 
     notifyListeners();
@@ -136,6 +163,8 @@ class CartProvider with ChangeNotifier {
   void clearCart() {
     AppLogger.userAction('Cart Cleared');
     _items.clear();
+    _restaurantId = null;
+    _restaurantName = null;
     notifyListeners();
   }
 }

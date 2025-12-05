@@ -512,6 +512,8 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
           for (int i = 0; i < orderItem.quantity; i++) {
             cartProvider.addItem(
               menuItem: menuItem,
+              restaurantId: order.restaurantId,
+              restaurantName: order.restaurantName,
               customizations: customizations,
             );
           }
