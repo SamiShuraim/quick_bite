@@ -23,6 +23,17 @@ import { Logger } from './utils/logger';
 export const createApp = (): Application => {
   const app = express();
 
+  // Trust proxy - Required when behind a reverse proxy (e.g., Render, Nginx, CloudFlare)
+  // This allows Express to trust X-Forwarded-* headers for accurate client IP detection
+  // and proper rate limiting functionality
+  if (config.isProduction) {
+    // In production, trust the first proxy (e.g., Render's load balancer)
+    app.set('trust proxy', 1);
+  } else {
+    // In development, also enable trust proxy for consistency
+    app.set('trust proxy', true);
+  }
+
   // Security middleware
   app.use(helmet());
 
