@@ -83,6 +83,83 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
     }
 
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
+
+    // Check if cart has items from a different restaurant
+    if (cartProvider.hasDifferentRestaurant(widget.restaurant.id)) {
+      _showDifferentRestaurantDialog(cartProvider);
+      return;
+    }
+
+    _performAddToCart(cartProvider, clearExisting: false);
+  }
+
+  Future<void> _showDifferentRestaurantDialog(CartProvider cartProvider) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+        return AlertDialog(
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+          title: Text(
+            'Replace cart items?',
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+          ),
+          content: Text(
+            'You have items from ${cartProvider.restaurantName} in your cart. Do you want to clear those items and add ${widget.menuItem.name} from ${widget.restaurant.name} instead?',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: isDarkMode
+                      ? AppColors.darkTextSecondary
+                      : AppColors.textSecondary,
+                ),
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(
+                'CANCEL',
+                style: TextStyle(
+                  color: isDarkMode
+                      ? AppColors.darkTextSecondary
+                      : AppColors.textSecondary,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: TextButton.styleFrom(
+                backgroundColor: AppColors.primary.withOpacity(0.1),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'REPLACE',
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (result == true && mounted) {
+      _performAddToCart(cartProvider, clearExisting: true);
+    }
+  }
+
+  void _performAddToCart(CartProvider cartProvider, {required bool clearExisting}) {
     final selectedCustomizations = _selectedCustomizations.entries
         .map((entry) {
           final option = widget.menuItem.customizations
@@ -98,7 +175,10 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
     for (int i = 0; i < _quantity; i++) {
       cartProvider.addItem(
         menuItem: widget.menuItem,
+        restaurantId: widget.restaurant.id,
+        restaurantName: widget.restaurant.name,
         customizations: selectedCustomizations,
+        clearExisting: clearExisting && i == 0, // Only clear on first item
       );
     }
 
