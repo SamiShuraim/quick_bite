@@ -42,9 +42,13 @@ const startServer = async (): Promise<void> => {
     // Handle server errors
     server.on('error', (error: NodeJS.ErrnoException) => {
       if (error.code === 'EADDRINUSE') {
-        Logger.error(`Port ${config.port} is already in use`);
+        Logger.error(`Port ${config.port} is already in use`, error);
       } else {
-        Logger.error('Server error', error);
+        Logger.error(`Server error: ${error.message}`, error, {
+          code: error.code,
+          errno: error.errno,
+          syscall: error.syscall,
+        });
       }
       process.exit(1);
     });

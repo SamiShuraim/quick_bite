@@ -31,9 +31,29 @@ winston.addColors(colors);
 const format = winston.format.combine(
   winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
   winston.format.colorize({ all: true }),
-  winston.format.printf(
-    (info) => `${info.timestamp} [${info.level}]: ${info.message}`
-  )
+  winston.format.printf((info: any) => {
+    let message = `${info.timestamp} [${info.level}]: ${info.message}`;
+    
+    // Add error details if present
+    if (info.error && typeof info.error === 'object') {
+      message += `\n  Error: ${info.error.name}: ${info.error.message}`;
+      if (info.error.stack && config.isDevelopment) {
+        message += `\n  Stack: ${info.error.stack}`;
+      }
+    }
+    
+    // Add metadata if present (excluding error which we already handled)
+    const metaKeys = Object.keys(info).filter(
+      key => !['level', 'message', 'timestamp', 'error', 'splat', Symbol.for('level')].includes(key)
+    );
+    if (metaKeys.length > 0) {
+      const meta: any = {};
+      metaKeys.forEach(key => meta[key] = info[key]);
+      message += `\n  Meta: ${JSON.stringify(meta, null, 2)}`;
+    }
+    
+    return message;
+  })
 );
 
 // Define transports
