@@ -76,12 +76,19 @@ export const errorHandler = (
 
   // Log error
   if (statusCode >= 500) {
-    Logger.error('Server error', err, {
-      statusCode,
-      path: req.path,
-      method: req.method,
-      body: req.body,
-    });
+    Logger.error(
+      `Server error: ${err.message || 'Unknown error'}`,
+      err,
+      {
+        statusCode,
+        path: req.path,
+        method: req.method,
+        body: req.body,
+        url: req.url,
+        params: req.params,
+        query: req.query,
+      }
+    );
   }
 
   // Prepare response
