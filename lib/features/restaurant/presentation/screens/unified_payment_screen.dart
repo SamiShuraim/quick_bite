@@ -51,7 +51,6 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
     {
       'id': 'mada',
       'name': 'Mada',
-      'logo': 'assets/mada_logo.png',
       'color': const Color(0xFF1B5BA1),
     },
   ];
@@ -264,7 +263,7 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
                   size: 24,
                 ),
               )
-            else if (method['logo'] != null)
+            else
               Container(
                 width: 40,
                 height: 40,
@@ -278,24 +277,8 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
                     color: Colors.grey[300]!,
                   ),
                 ),
-                child: method['id'] == 'visa'
-                    ? Image.network(
-                        _getCardLogoUrl(method['id']),
-                        fit: BoxFit.contain,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Center(
-                            child: Text(
-                              'V',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: method['color'],
-                              ),
-                            ),
-                          );
-                        },
-                      )
-                    : Image.asset(
+                child: method['id'] == 'mada'
+                    ? Image.asset(
                         'assets/mada_logo.png',
                         fit: BoxFit.contain,
                         errorBuilder: (context, error, stackTrace) {
@@ -311,29 +294,23 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
                             ),
                           );
                         },
+                      )
+                    : Image.network(
+                        _getCardLogoUrl(method['id']),
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Center(
+                            child: Text(
+                              'V',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: method['color'],
+                              ),
+                            ),
+                          );
+                        },
                       ),
-              )
-            else
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(
-                    color: Colors.grey[300]!,
-                  ),
-                ),
-                child: Center(
-                  child: Text(
-                    method['name'][0],
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: method['color'],
-                    ),
-                  ),
-                ),
               ),
             const SizedBox(height: 8),
             Text(
