@@ -26,27 +26,49 @@ export const createApp = (): Application => {
   // Security middleware
   app.use(helmet());
 
+  // Health check endpoint (before CORS to avoid CORS issues with monitoring services)
+  app.get('/health', (_req, res) => {
+    res.status(200).json({
+      success: true,
+      message: 'Server is healthy',
+      timestamp: new Date().toISOString(),
+      environment: config.env,
+    });
+  });
+
   // CORS configuration - Allow all localhost origins in development
   app.use(
     cors({
       origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps, Postman, curl)
-        if (!origin) return callback(null, true);
+        // Allow requests with no origin (like mobile apps, Postman, curl, health checks)
+        if (!origin) {
+          Logger.debug('CORS: Allowing request with no origin');
+          return callback(null, true);
+        }
         
         // In development, allow all localhost origins
         if (config.isDevelopment && origin.includes('localhost')) {
+          Logger.debug(`CORS: Allowing localhost origin: ${origin}`);
           return callback(null, true);
         }
         
         // Check against allowed origins list
         if (config.cors.allowedOrigins.includes(origin)) {
+          Logger.debug(`CORS: Allowing whitelisted origin: ${origin}`);
           return callback(null, true);
         }
         
+        // In production, also allow Render.com domains
+        if (origin.includes('.onrender.com') || origin.includes('render.com')) {
+          Logger.debug(`CORS: Allowing Render.com origin: ${origin}`);
+          return callback(null, true);
+        }
+        
+        Logger.warn(`CORS: Blocking origin: ${origin}`);
         callback(new Error('Not allowed by CORS'));
       },
       credentials: true,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization'],
     })
   );
@@ -73,16 +95,6 @@ export const createApp = (): Application => {
 
   // API rate limiting
   app.use('/api/', apiLimiter);
-
-  // Health check endpoint
-  app.get('/health', (_req, res) => {
-    res.status(200).json({
-      success: true,
-      message: 'Server is healthy',
-      timestamp: new Date().toISOString(),
-      environment: config.env,
-    });
-  });
 
   // API Routes
   app.use(`/api/${config.apiVersion}/auth`, authRoutes);
