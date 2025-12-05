@@ -57,7 +57,18 @@ void main() async {
   final httpClient = http.Client();
 
   // Core services
-  final secureStorage = const FlutterSecureStorage();
+  final secureStorage = FlutterSecureStorage(
+    aOptions: AndroidOptions(
+      encryptedSharedPreferences: true,
+    ),
+    iOptions: IOSOptions(
+      accessibility: KeychainAccessibility.first_unlock,
+    ),
+    webOptions: WebOptions(
+      dbName: 'QuickBiteSecureStorage',
+      publicKey: 'QuickBitePublicKey',
+    ),
+  );
   final storageService = StorageService(
     secureStorage: secureStorage,
     preferences: sharedPreferences,

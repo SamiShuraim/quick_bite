@@ -3,6 +3,7 @@
 library;
 
 import 'dart:convert';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/api_constants.dart';
@@ -11,6 +12,7 @@ import '../utils/app_logger.dart';
 class StorageService {
   final FlutterSecureStorage _secureStorage;
   final SharedPreferences _preferences;
+  bool _useSecureStorageFallback = false;
 
   StorageService({
     required FlutterSecureStorage secureStorage,
@@ -23,11 +25,31 @@ class StorageService {
   /// Save access token
   Future<void> saveAccessToken(String token) async {
     try {
-      await _secureStorage.write(
-        key: ApiConstants.accessTokenKey,
-        value: token,
-      );
-      AppLogger.debug('Access token saved');
+      // Try secure storage first
+      if (!_useSecureStorageFallback) {
+        try {
+          await _secureStorage.write(
+            key: ApiConstants.accessTokenKey,
+            value: token,
+          );
+          AppLogger.debug('Access token saved securely');
+          return;
+        } catch (e) {
+          if (kIsWeb) {
+            AppLogger.warning(
+              'Secure storage failed on web, falling back to SharedPreferences',
+              data: e,
+            );
+            _useSecureStorageFallback = true;
+          } else {
+            rethrow;
+          }
+        }
+      }
+
+      // Fallback to SharedPreferences (for web or if secure storage failed)
+      await _preferences.setString(ApiConstants.accessTokenKey, token);
+      AppLogger.debug('Access token saved (fallback)');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to save access token',
           error: e, stackTrace: stackTrace);
@@ -38,7 +60,26 @@ class StorageService {
   /// Get access token
   Future<String?> getAccessToken() async {
     try {
-      return await _secureStorage.read(key: ApiConstants.accessTokenKey);
+      // Try secure storage first
+      if (!_useSecureStorageFallback) {
+        try {
+          final token = await _secureStorage.read(key: ApiConstants.accessTokenKey);
+          if (token != null) return token;
+        } catch (e) {
+          if (kIsWeb) {
+            AppLogger.warning(
+              'Secure storage read failed on web, using fallback',
+              data: e,
+            );
+            _useSecureStorageFallback = true;
+          } else {
+            rethrow;
+          }
+        }
+      }
+
+      // Fallback to SharedPreferences
+      return _preferences.getString(ApiConstants.accessTokenKey);
     } catch (e, stackTrace) {
       AppLogger.error('Failed to read access token',
           error: e, stackTrace: stackTrace);
@@ -49,11 +90,31 @@ class StorageService {
   /// Save refresh token
   Future<void> saveRefreshToken(String token) async {
     try {
-      await _secureStorage.write(
-        key: ApiConstants.refreshTokenKey,
-        value: token,
-      );
-      AppLogger.debug('Refresh token saved');
+      // Try secure storage first
+      if (!_useSecureStorageFallback) {
+        try {
+          await _secureStorage.write(
+            key: ApiConstants.refreshTokenKey,
+            value: token,
+          );
+          AppLogger.debug('Refresh token saved securely');
+          return;
+        } catch (e) {
+          if (kIsWeb) {
+            AppLogger.warning(
+              'Secure storage failed on web, falling back to SharedPreferences',
+              data: e,
+            );
+            _useSecureStorageFallback = true;
+          } else {
+            rethrow;
+          }
+        }
+      }
+
+      // Fallback to SharedPreferences (for web or if secure storage failed)
+      await _preferences.setString(ApiConstants.refreshTokenKey, token);
+      AppLogger.debug('Refresh token saved (fallback)');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to save refresh token',
           error: e, stackTrace: stackTrace);
@@ -64,7 +125,26 @@ class StorageService {
   /// Get refresh token
   Future<String?> getRefreshToken() async {
     try {
-      return await _secureStorage.read(key: ApiConstants.refreshTokenKey);
+      // Try secure storage first
+      if (!_useSecureStorageFallback) {
+        try {
+          final token = await _secureStorage.read(key: ApiConstants.refreshTokenKey);
+          if (token != null) return token;
+        } catch (e) {
+          if (kIsWeb) {
+            AppLogger.warning(
+              'Secure storage read failed on web, using fallback',
+              data: e,
+            );
+            _useSecureStorageFallback = true;
+          } else {
+            rethrow;
+          }
+        }
+      }
+
+      // Fallback to SharedPreferences
+      return _preferences.getString(ApiConstants.refreshTokenKey);
     } catch (e, stackTrace) {
       AppLogger.error('Failed to read refresh token',
           error: e, stackTrace: stackTrace);
@@ -75,8 +155,27 @@ class StorageService {
   /// Delete tokens
   Future<void> deleteTokens() async {
     try {
-      await _secureStorage.delete(key: ApiConstants.accessTokenKey);
-      await _secureStorage.delete(key: ApiConstants.refreshTokenKey);
+      // Try deleting from both storage locations to be safe
+      if (!_useSecureStorageFallback) {
+        try {
+          await _secureStorage.delete(key: ApiConstants.accessTokenKey);
+          await _secureStorage.delete(key: ApiConstants.refreshTokenKey);
+        } catch (e) {
+          if (kIsWeb) {
+            AppLogger.warning(
+              'Secure storage delete failed on web, using fallback',
+              data: e,
+            );
+            _useSecureStorageFallback = true;
+          } else {
+            rethrow;
+          }
+        }
+      }
+
+      // Also delete from SharedPreferences (fallback)
+      await _preferences.remove(ApiConstants.accessTokenKey);
+      await _preferences.remove(ApiConstants.refreshTokenKey);
       AppLogger.debug('Tokens deleted');
     } catch (e, stackTrace) {
       AppLogger.error('Failed to delete tokens',
