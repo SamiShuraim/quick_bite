@@ -277,23 +277,40 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
                     color: Colors.grey[300]!,
                   ),
                 ),
-                child: Image.network(
-                  _getCardLogoUrl(method['id']),
-                  fit: BoxFit.contain,
-                  errorBuilder: (context, error, stackTrace) {
-                    return Center(
-                      child: Text(
-                        method['id'] == 'visa' ? 'V' : 'mada',
-                        style: TextStyle(
-                          fontSize: method['id'] == 'visa' ? 20 : 11,
-                          fontWeight: FontWeight.w900,
-                          color: method['id'] == 'mada' ? Colors.white : method['color'],
-                          letterSpacing: 0.5,
-                        ),
+                child: method['id'] == 'mada'
+                    ? Image.asset(
+                        'assets/mada_logo.png',
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Center(
+                            child: Text(
+                              'mada',
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          );
+                        },
+                      )
+                    : Image.network(
+                        _getCardLogoUrl(method['id']),
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Center(
+                            child: Text(
+                              'V',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: method['color'],
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
             const SizedBox(height: 8),
             Text(
