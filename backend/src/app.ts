@@ -37,28 +37,15 @@ export const createApp = (): Application => {
   // Security middleware
   app.use(helmet());
 
-  // CORS configuration - Allow all localhost origins in development
+  // CORS configuration - ALLOW EVERYTHING (ALL ORIGINS)
   app.use(
     cors({
-      origin: (origin, callback) => {
-        // Allow requests with no origin (like mobile apps, Postman, curl)
-        if (!origin) return callback(null, true);
-        
-        // In development, allow all localhost origins
-        if (config.isDevelopment && origin.includes('localhost')) {
-          return callback(null, true);
-        }
-        
-        // Check against allowed origins list
-        if (config.cors.allowedOrigins.includes(origin)) {
-          return callback(null, true);
-        }
-        
-        callback(new Error('Not allowed by CORS'));
-      },
+      origin: true, // Allow ALL origins
       credentials: true,
-      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-      allowedHeaders: ['Content-Type', 'Authorization'],
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+      exposedHeaders: ['Content-Length', 'X-Request-Id'],
+      maxAge: 86400, // 24 hours
     })
   );
 
