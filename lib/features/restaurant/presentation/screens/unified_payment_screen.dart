@@ -51,7 +51,7 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
     {
       'id': 'mada',
       'name': 'Mada',
-      'logo': 'assets/mada.png',
+      'logo': 'assets/mada_logo.png',
       'color': const Color(0xFF1B5BA1),
     },
   ];
@@ -278,23 +278,40 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
                     color: Colors.grey[300]!,
                   ),
                 ),
-                child: Image.network(
-                      _getCardLogoUrl(method['id']),
-                      fit: BoxFit.contain,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Center(
-                          child: Text(
-                            method['id'] == 'visa' ? 'V' : 'mada',
-                            style: TextStyle(
-                              fontSize: method['id'] == 'visa' ? 20 : 11,
-                              fontWeight: FontWeight.w900,
-                              color: method['id'] == 'visa' ? method['color'] : Colors.white,
-                              letterSpacing: method['id'] == 'mada' ? 0.5 : 0,
+                child: method['id'] == 'visa'
+                    ? Image.network(
+                        _getCardLogoUrl(method['id']),
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Center(
+                            child: Text(
+                              'V',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: method['color'],
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
+                          );
+                        },
+                      )
+                    : Image.asset(
+                        'assets/mada_logo.png',
+                        fit: BoxFit.contain,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Center(
+                            child: Text(
+                              'mada',
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
               )
             else
               Container(
