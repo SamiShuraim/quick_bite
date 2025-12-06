@@ -198,6 +198,18 @@ class RestaurantProvider with ChangeNotifier {
     }
   }
 
+  Future<RestaurantEntity> getRestaurantById(String restaurantId) async {
+    try {
+      AppLogger.info('Fetching restaurant by ID: $restaurantId');
+      final restaurant = await repository.getRestaurantById(restaurantId);
+      AppLogger.info('Loaded restaurant: ${restaurant.name}');
+      return restaurant;
+    } catch (e) {
+      AppLogger.error('Error loading restaurant by ID', error: e);
+      rethrow;
+    }
+  }
+
   Future<MenuItemEntity> getMenuItemById(String menuItemId) async {
     try {
       AppLogger.info('Fetching menu item by ID: $menuItemId');

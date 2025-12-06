@@ -460,6 +460,24 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
         ),
       );
       
+      // First, fetch the restaurant details to get current delivery fee
+      RestaurantEntity? restaurant;
+      try {
+        restaurant = await restaurantProvider.getRestaurantById(order.restaurantId);
+      } catch (e) {
+        AppLogger.error('Failed to fetch restaurant details', error: e);
+        if (!mounted) return;
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Unable to reorder. Restaurant information not available.'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 4),
+          ),
+        );
+        return;
+      }
+      
       // Clear current cart
       cartProvider.clearCart();
       
@@ -514,6 +532,8 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
               menuItem: menuItem,
               restaurantId: order.restaurantId,
               restaurantName: order.restaurantName,
+              restaurantDeliveryFee: restaurant!.deliveryFee,
+              isFreeDelivery: restaurant.isFreeDelivery,
               customizations: customizations,
             );
           }
