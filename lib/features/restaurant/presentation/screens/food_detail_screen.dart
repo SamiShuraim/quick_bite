@@ -177,6 +177,8 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
         menuItem: widget.menuItem,
         restaurantId: widget.restaurant.id,
         restaurantName: widget.restaurant.name,
+        restaurantDeliveryFee: widget.restaurant.deliveryFee,
+        isFreeDelivery: widget.restaurant.isFreeDelivery,
         customizations: selectedCustomizations,
         clearExisting: clearExisting && i == 0, // Only clear on first item
       );

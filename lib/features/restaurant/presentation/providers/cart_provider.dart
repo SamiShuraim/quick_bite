@@ -11,6 +11,8 @@ class CartProvider with ChangeNotifier {
   final List<CartItem> _items = [];
   String? _restaurantId;
   String? _restaurantName;
+  double? _restaurantDeliveryFee;
+  bool _isFreeDelivery = false;
   static const double taxRate = 0.15; // 15% VAT (Saudi Arabia)
 
   List<CartItem> get items => _items;
@@ -24,8 +26,9 @@ class CartProvider with ChangeNotifier {
   }
 
   double get deliveryFee {
-    // Free delivery over 30 SAR
-    return subtotal >= 30 ? 0 : 5.00;
+    // Use restaurant's delivery fee if available
+    if (_isFreeDelivery) return 0.0;
+    return _restaurantDeliveryFee ?? 0.0;
   }
 
   double get tax {
@@ -55,6 +58,8 @@ class CartProvider with ChangeNotifier {
     required MenuItemEntity menuItem,
     required String restaurantId,
     required String restaurantName,
+    required double restaurantDeliveryFee,
+    required bool isFreeDelivery,
     List<SelectedCustomization> customizations = const [],
     bool clearExisting = false,
   }) {
@@ -63,12 +68,16 @@ class CartProvider with ChangeNotifier {
       _items.clear();
       _restaurantId = null;
       _restaurantName = null;
+      _restaurantDeliveryFee = null;
+      _isFreeDelivery = false;
     }
 
     // Set restaurant info if cart is empty
     if (_items.isEmpty) {
       _restaurantId = restaurantId;
       _restaurantName = restaurantName;
+      _restaurantDeliveryFee = restaurantDeliveryFee;
+      _isFreeDelivery = isFreeDelivery;
     }
 
     final customizationPrice = customizations.fold<double>(
@@ -165,6 +174,8 @@ class CartProvider with ChangeNotifier {
     _items.clear();
     _restaurantId = null;
     _restaurantName = null;
+    _restaurantDeliveryFee = null;
+    _isFreeDelivery = false;
     notifyListeners();
   }
 }
