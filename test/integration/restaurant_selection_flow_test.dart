@@ -274,6 +274,58 @@ void main() {
       expect(find.text('Sushi Bar'), findsNothing);
     });
 
+    testWidgets('Filtering back to All should show all restaurants',
+        (WidgetTester tester) async {
+      final allRestaurants = [
+        const RestaurantEntity(
+          id: 'rest1',
+          name: 'Burger Palace',
+          description: 'Best burgers',
+          imageUrl: 'url',
+          rating: 4.5,
+          reviewCount: 100,
+          deliveryTime: 30,
+          deliveryFee: 5.0,
+          categories: ['Fast Food'],
+          address: '123 Main St',
+          distance: 2.5,
+        ),
+        const RestaurantEntity(
+          id: 'rest2',
+          name: 'Pizza House',
+          description: 'Italian pizza',
+          imageUrl: 'url',
+          rating: 4.8,
+          reviewCount: 200,
+          deliveryTime: 40,
+          deliveryFee: 7.0,
+          categories: ['Italian'],
+          address: '456 Oak Ave',
+          distance: 3.2,
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: _FilterableRestaurantList(allRestaurants: allRestaurants),
+        ),
+      );
+
+      // Filter by Fast Food
+      await tester.tap(find.text('Fast Food'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Burger Palace'), findsOneWidget);
+      expect(find.text('Pizza House'), findsNothing);
+
+      // Filter back to All
+      await tester.tap(find.text('All'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Burger Palace'), findsOneWidget);
+      expect(find.text('Pizza House'), findsOneWidget);
+    });
+
     testWidgets('Menu item selection should show details',
         (WidgetTester tester) async {
       final menuItems = [
@@ -405,6 +457,134 @@ void main() {
 
       expect(find.text('Burger Palace'), findsOneWidget);
       expect(find.text('Pizza House'), findsNothing);
+    });
+
+    testWidgets('Clearing search should show all restaurants',
+        (WidgetTester tester) async {
+      final allRestaurants = [
+        const RestaurantEntity(
+          id: 'rest1',
+          name: 'Burger Palace',
+          description: 'Best burgers',
+          imageUrl: 'url',
+          rating: 4.5,
+          reviewCount: 100,
+          deliveryTime: 30,
+          deliveryFee: 5.0,
+          categories: ['Fast Food'],
+          address: '123 Main St',
+          distance: 2.5,
+        ),
+        const RestaurantEntity(
+          id: 'rest2',
+          name: 'Pizza House',
+          description: 'Italian pizza',
+          imageUrl: 'url',
+          rating: 4.8,
+          reviewCount: 200,
+          deliveryTime: 40,
+          deliveryFee: 7.0,
+          categories: ['Italian'],
+          address: '456 Oak Ave',
+          distance: 3.2,
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: _SearchableRestaurantList(allRestaurants: allRestaurants),
+        ),
+      );
+
+      // Search for "burger"
+      await tester.enterText(find.byType(TextField), 'burger');
+      await tester.pumpAndSettle();
+
+      expect(find.text('Burger Palace'), findsOneWidget);
+      expect(find.text('Pizza House'), findsNothing);
+
+      // Clear search
+      await tester.enterText(find.byType(TextField), '');
+      await tester.pumpAndSettle();
+
+      expect(find.text('Burger Palace'), findsOneWidget);
+      expect(find.text('Pizza House'), findsOneWidget);
+    });
+
+    testWidgets('Case insensitive search should work',
+        (WidgetTester tester) async {
+      final allRestaurants = [
+        const RestaurantEntity(
+          id: 'rest1',
+          name: 'Burger Palace',
+          description: 'Best burgers',
+          imageUrl: 'url',
+          rating: 4.5,
+          reviewCount: 100,
+          deliveryTime: 30,
+          deliveryFee: 5.0,
+          categories: ['Fast Food'],
+          address: '123 Main St',
+          distance: 2.5,
+        ),
+        const RestaurantEntity(
+          id: 'rest2',
+          name: 'Pizza House',
+          description: 'Italian pizza',
+          imageUrl: 'url',
+          rating: 4.8,
+          reviewCount: 200,
+          deliveryTime: 40,
+          deliveryFee: 7.0,
+          categories: ['Italian'],
+          address: '456 Oak Ave',
+          distance: 3.2,
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: _SearchableRestaurantList(allRestaurants: allRestaurants),
+        ),
+      );
+
+      // Search with uppercase
+      await tester.enterText(find.byType(TextField), 'PIZZA');
+      await tester.pumpAndSettle();
+
+      expect(find.text('Pizza House'), findsOneWidget);
+      expect(find.text('Burger Palace'), findsNothing);
+    });
+
+    testWidgets('No results should show empty list',
+        (WidgetTester tester) async {
+      final allRestaurants = [
+        const RestaurantEntity(
+          id: 'rest1',
+          name: 'Burger Palace',
+          description: 'Best burgers',
+          imageUrl: 'url',
+          rating: 4.5,
+          reviewCount: 100,
+          deliveryTime: 30,
+          deliveryFee: 5.0,
+          categories: ['Fast Food'],
+          address: '123 Main St',
+          distance: 2.5,
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: _SearchableRestaurantList(allRestaurants: allRestaurants),
+        ),
+      );
+
+      // Search for non-existent restaurant
+      await tester.enterText(find.byType(TextField), 'Sushi');
+      await tester.pumpAndSettle();
+
+      expect(find.text('Burger Palace'), findsNothing);
     });
   });
 }
