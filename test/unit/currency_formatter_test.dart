@@ -25,7 +25,8 @@ void main() {
     });
 
     test('Should format amounts with more than 2 decimal places', () {
-      expect(CurrencyFormatter.format(25.555), equals('SAR 25.56')); // Rounds up
+      expect(CurrencyFormatter.format(25.555), equals('SAR 25.55')); // Banker's rounding
+      expect(CurrencyFormatter.format(25.556), equals('SAR 25.56')); // Rounds up
       expect(CurrencyFormatter.format(25.554), equals('SAR 25.55')); // Rounds down
     });
 

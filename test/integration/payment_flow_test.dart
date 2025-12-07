@@ -206,8 +206,8 @@ void main() {
       expect(find.text('Expiry Date'), findsOneWidget);
       expect(find.text('CVV'), findsOneWidget);
 
-      // Submit form without filling
-      await tester.tap(find.text('Add Card'));
+      // Submit form without filling - use byType to avoid ambiguity
+      await tester.tap(find.byType(ElevatedButton));
       await tester.pumpAndSettle();
 
       expect(find.text('Please enter card number'), findsOneWidget);

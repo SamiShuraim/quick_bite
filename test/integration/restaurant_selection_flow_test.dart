@@ -7,6 +7,133 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:quick_bite/features/restaurant/domain/entities/restaurant_entity.dart';
 import 'package:quick_bite/features/restaurant/domain/entities/menu_item_entity.dart';
 
+// Helper widget for filtering test
+class _FilterableRestaurantList extends StatefulWidget {
+  final List<RestaurantEntity> allRestaurants;
+
+  const _FilterableRestaurantList({required this.allRestaurants});
+
+  @override
+  State<_FilterableRestaurantList> createState() =>
+      _FilterableRestaurantListState();
+}
+
+class _FilterableRestaurantListState extends State<_FilterableRestaurantList> {
+  String selectedCategory = 'All';
+
+  @override
+  Widget build(BuildContext context) {
+    final filteredRestaurants = selectedCategory == 'All'
+        ? widget.allRestaurants
+        : widget.allRestaurants
+            .where((r) => r.categories.contains(selectedCategory))
+            .toList();
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Restaurants')),
+      body: Column(
+        children: [
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      selectedCategory = 'All';
+                    });
+                  },
+                  child: const Text('All'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      selectedCategory = 'Fast Food';
+                    });
+                  },
+                  child: const Text('Fast Food'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      selectedCategory = 'Italian';
+                    });
+                  },
+                  child: const Text('Italian'),
+                ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: filteredRestaurants.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(filteredRestaurants[index].name),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// Helper widget for search test
+class _SearchableRestaurantList extends StatefulWidget {
+  final List<RestaurantEntity> allRestaurants;
+
+  const _SearchableRestaurantList({required this.allRestaurants});
+
+  @override
+  State<_SearchableRestaurantList> createState() =>
+      _SearchableRestaurantListState();
+}
+
+class _SearchableRestaurantListState
+    extends State<_SearchableRestaurantList> {
+  String searchQuery = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final filteredRestaurants = searchQuery.isEmpty
+        ? widget.allRestaurants
+        : widget.allRestaurants
+            .where((r) =>
+                r.name.toLowerCase().contains(searchQuery.toLowerCase()))
+            .toList();
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Restaurants')),
+      body: Column(
+        children: [
+          TextField(
+            decoration: const InputDecoration(
+              hintText: 'Search restaurants',
+            ),
+            onChanged: (value) {
+              setState(() {
+                searchQuery = value;
+              });
+            },
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: filteredRestaurants.length,
+              itemBuilder: (context, index) {
+                return ListTile(
+                  title: Text(filteredRestaurants[index].name),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 void main() {
   group('Restaurant Selection Flow Integration Tests', () {
     testWidgets('Selecting restaurant should navigate to menu',
@@ -129,66 +256,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: StatefulBuilder(
-            builder: (context, setState) {
-              String selectedCategory = 'All';
-
-              final filteredRestaurants = selectedCategory == 'All'
-                  ? allRestaurants
-                  : allRestaurants
-                      .where((r) => r.categories.contains(selectedCategory))
-                      .toList();
-
-              return Scaffold(
-                appBar: AppBar(title: const Text('Restaurants')),
-                body: Column(
-                  children: [
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          TextButton(
-                            onPressed: () {
-                              setState(() {
-                                selectedCategory = 'All';
-                              });
-                            },
-                            child: const Text('All'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              setState(() {
-                                selectedCategory = 'Fast Food';
-                              });
-                            },
-                            child: const Text('Fast Food'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              setState(() {
-                                selectedCategory = 'Italian';
-                              });
-                            },
-                            child: const Text('Italian'),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: filteredRestaurants.length,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            title: Text(filteredRestaurants[index].name),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+          home: _FilterableRestaurantList(allRestaurants: allRestaurants),
         ),
       );
 
@@ -322,47 +390,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: StatefulBuilder(
-            builder: (context, setState) {
-              String searchQuery = '';
-
-              final filteredRestaurants = searchQuery.isEmpty
-                  ? allRestaurants
-                  : allRestaurants
-                      .where((r) => r.name
-                          .toLowerCase()
-                          .contains(searchQuery.toLowerCase()))
-                      .toList();
-
-              return Scaffold(
-                appBar: AppBar(title: const Text('Restaurants')),
-                body: Column(
-                  children: [
-                    TextField(
-                      decoration: const InputDecoration(
-                        hintText: 'Search restaurants',
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          searchQuery = value;
-                        });
-                      },
-                    ),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: filteredRestaurants.length,
-                        itemBuilder: (context, index) {
-                          return ListTile(
-                            title: Text(filteredRestaurants[index].name),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+          home: _SearchableRestaurantList(allRestaurants: allRestaurants),
         ),
       );
 

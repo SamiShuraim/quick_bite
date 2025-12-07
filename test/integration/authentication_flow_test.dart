@@ -155,8 +155,8 @@ void main() {
       expect(find.text('Sign Up'), findsWidgets);
       expect(find.text('Name'), findsOneWidget);
 
-      // Submit signup
-      await tester.tap(find.text('Sign Up'));
+      // Submit signup - use byType to avoid ambiguity
+      await tester.tap(find.byType(ElevatedButton));
       await tester.pumpAndSettle();
 
       // Should go to verification
