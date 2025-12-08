@@ -14,6 +14,7 @@ import '../../../restaurant/presentation/providers/restaurant_provider.dart';
 import '../../../restaurant/domain/entities/order_entity.dart';
 import '../../../restaurant/domain/entities/cart_entity.dart';
 import '../../../restaurant/domain/entities/menu_item_entity.dart';
+import '../../../restaurant/domain/entities/restaurant_entity.dart';
 import '../../../restaurant/presentation/screens/cart_screen_v2.dart';
 import 'package:intl/intl.dart';
 import 'order_tracking_screen.dart';
