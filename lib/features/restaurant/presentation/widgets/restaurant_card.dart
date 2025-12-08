@@ -18,17 +18,15 @@ class RestaurantCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: isDarkMode ? AppColors.darkCardBackground : Colors.white,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: AppColors.shadow,
+              color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -53,13 +51,11 @@ class RestaurantCard extends StatelessWidget {
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
                         height: 160,
-                        color: isDarkMode
-                            ? AppColors.darkImagePlaceholder
-                            : AppColors.imagePlaceholder,
-                        child: const Icon(
+                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        child: Icon(
                           Icons.restaurant,
                           size: 48,
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       );
                     },
@@ -148,9 +144,7 @@ class RestaurantCard extends StatelessWidget {
                   Text(
                     restaurant.description,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: isDarkMode
-                              ? AppColors.darkTextSecondary
-                              : AppColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -190,9 +184,7 @@ class RestaurantCard extends StatelessWidget {
                             Text(
                               ' (${restaurant.reviewCount})',
                               style: TextStyle(
-                                color: isDarkMode
-                                    ? AppColors.darkTextSecondary
-                                    : AppColors.textSecondary,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 fontSize: 12,
                               ),
                             ),
@@ -206,17 +198,13 @@ class RestaurantCard extends StatelessWidget {
                       Icon(
                         Icons.access_time,
                         size: 16,
-                        color: isDarkMode
-                            ? AppColors.darkTextSecondary
-                            : AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         '${restaurant.deliveryTime} min',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: isDarkMode
-                                  ? AppColors.darkTextSecondary
-                                  : AppColors.textSecondary,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                       ),
 
@@ -226,17 +214,13 @@ class RestaurantCard extends StatelessWidget {
                       Icon(
                         Icons.location_on_outlined,
                         size: 16,
-                        color: isDarkMode
-                            ? AppColors.darkTextSecondary
-                            : AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         '${restaurant.distance} km',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: isDarkMode
-                                  ? AppColors.darkTextSecondary
-                                  : AppColors.textSecondary,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                       ),
                     ],

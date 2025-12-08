@@ -137,8 +137,6 @@ class _BackendLoadingScreenState extends State<BackendLoadingScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -227,10 +225,8 @@ class _BackendLoadingScreenState extends State<BackendLoadingScreen>
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: _hasError 
-                          ? AppColors.error 
-                          : (isDarkMode 
-                              ? AppColors.darkTextSecondary 
-                              : AppColors.textSecondary),
+                          ? Theme.of(context).colorScheme.error
+                          : Theme.of(context).colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w500,
                     ),
               ),
@@ -241,14 +237,10 @@ class _BackendLoadingScreenState extends State<BackendLoadingScreen>
               Container(
                 padding: const EdgeInsets.all(AppConstants.defaultPadding),
                 decoration: BoxDecoration(
-                  color: isDarkMode
-                      ? Colors.white.withValues(alpha: 0.05)
-                      : Colors.black.withValues(alpha: 0.05),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: isDarkMode
-                        ? Colors.white.withValues(alpha: 0.1)
-                        : Colors.black.withValues(alpha: 0.1),
+                    color: Theme.of(context).colorScheme.outline,
                   ),
                 ),
                 child: Column(
@@ -276,9 +268,7 @@ class _BackendLoadingScreenState extends State<BackendLoadingScreen>
                       'Free services spin down after inactivity and can take up to a minute to start. '
                       'Once the server is running, the app will work smoothly!',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: isDarkMode
-                                ? AppColors.darkTextSecondary
-                                : AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                             height: 1.5,
                           ),
                       textAlign: TextAlign.center,
@@ -315,9 +305,7 @@ class _BackendLoadingScreenState extends State<BackendLoadingScreen>
                 Text(
                   'Attempt $_attemptCount',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: isDarkMode
-                            ? AppColors.darkTextSecondary.withValues(alpha: 0.5)
-                            : AppColors.textSecondary.withValues(alpha: 0.5),
+                        color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                       ),
                 ),
             ],

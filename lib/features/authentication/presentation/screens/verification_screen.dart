@@ -178,8 +178,6 @@ class _VerificationScreenState extends State<VerificationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
@@ -226,9 +224,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                 child: Text(
                   'We have sent a code to your email\n${widget.email}',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: isDarkMode
-                            ? AppColors.darkTextSecondary
-                            : AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                   textAlign: TextAlign.center,
                 ),
@@ -288,9 +284,7 @@ class _VerificationScreenState extends State<VerificationScreen> {
                     Text(
                       'Resend in ${_resendTimer}s',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: isDarkMode
-                                ? AppColors.darkTextSecondary
-                                : AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                     ),
                 ],
@@ -303,18 +297,16 @@ class _VerificationScreenState extends State<VerificationScreen> {
   }
 
   Widget _buildCodeInput(int index) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return Container(
       width: 60,
       height: 60,
       decoration: BoxDecoration(
-        color: isDarkMode ? AppColors.darkSurface : AppColors.lightBackground,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: _focusNodes[index].hasFocus
-              ? AppColors.primary
-              : (isDarkMode ? AppColors.darkBorder : AppColors.lightBorder),
+              ? Theme.of(context).colorScheme.primary
+              : Theme.of(context).colorScheme.outline,
           width: _focusNodes[index].hasFocus ? 2 : 1,
         ),
       ),

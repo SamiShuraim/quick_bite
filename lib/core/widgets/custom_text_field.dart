@@ -45,8 +45,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -71,23 +69,19 @@ class _CustomTextFieldState extends State<CustomTextField> {
           decoration: InputDecoration(
             hintText: widget.placeholder,
             hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: isDarkMode
-                      ? AppColors.darkTextSecondary
-                      : AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
             prefixIcon: widget.prefixIcon != null
                 ? Icon(
                     widget.prefixIcon,
-                    color: AppColors.primary,
+                    color: Theme.of(context).colorScheme.primary,
                   )
                 : null,
             suffixIcon: widget.obscureText
                 ? IconButton(
                     icon: Icon(
                       _obscureText ? Icons.visibility_off : Icons.visibility,
-                      color: isDarkMode
-                          ? AppColors.darkTextSecondary
-                          : AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     onPressed: () {
                       setState(() {
@@ -97,9 +91,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   )
                 : null,
             filled: true,
-            fillColor: isDarkMode
-                ? AppColors.darkSurface
-                : AppColors.lightBackground,
+            fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: AppConstants.mediumPadding,
               vertical: AppConstants.mediumPadding,
@@ -109,9 +101,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 AppConstants.buttonBorderRadius,
               ),
               borderSide: BorderSide(
-                color: isDarkMode
-                    ? AppColors.darkBorder
-                    : AppColors.lightBorder,
+                color: Theme.of(context).colorScheme.outline,
               ),
             ),
             enabledBorder: OutlineInputBorder(
@@ -119,17 +109,15 @@ class _CustomTextFieldState extends State<CustomTextField> {
                 AppConstants.buttonBorderRadius,
               ),
               borderSide: BorderSide(
-                color: isDarkMode
-                    ? AppColors.darkBorder
-                    : AppColors.lightBorder,
+                color: Theme.of(context).colorScheme.outline,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(
                 AppConstants.buttonBorderRadius,
               ),
-              borderSide: const BorderSide(
-                color: AppColors.primary,
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.primary,
                 width: 2.0,
               ),
             ),
@@ -137,16 +125,16 @@ class _CustomTextFieldState extends State<CustomTextField> {
               borderRadius: BorderRadius.circular(
                 AppConstants.buttonBorderRadius,
               ),
-              borderSide: const BorderSide(
-                color: AppColors.error,
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.error,
               ),
             ),
             focusedErrorBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(
                 AppConstants.buttonBorderRadius,
               ),
-              borderSide: const BorderSide(
-                color: AppColors.error,
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.error,
                 width: 2.0,
               ),
             ),

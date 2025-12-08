@@ -15,18 +15,17 @@ class CartScreenV2 extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final cartProvider = Provider.of<CartProvider>(context);
 
     return Scaffold(
-      backgroundColor: isDarkMode ? const Color(0xFF1E1E2E) : const Color(0xFFF5F5F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: isDarkMode ? const Color(0xFF1E1E2E) : const Color(0xFFF5F5F5),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: isDarkMode ? Colors.white : Colors.black,
+            color: Theme.of(context).colorScheme.onSurface,
             size: 20,
           ),
           onPressed: () => Navigator.pop(context),
@@ -34,7 +33,7 @@ class CartScreenV2 extends StatelessWidget {
         title: Text(
           cartProvider.isEmpty ? 'Cart' : 'My Cart',
           style: TextStyle(
-            color: isDarkMode ? Colors.white : Colors.black,
+            color: Theme.of(context).colorScheme.onSurface,
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -42,12 +41,12 @@ class CartScreenV2 extends StatelessWidget {
         centerTitle: false,
       ),
       body: cartProvider.isEmpty
-          ? _buildEmptyCart(context, isDarkMode)
-          : _buildCartContent(context, isDarkMode, cartProvider),
+          ? _buildEmptyCart(context)
+          : _buildCartContent(context, cartProvider),
     );
   }
 
-  Widget _buildEmptyCart(BuildContext context, bool isDarkMode) {
+  Widget _buildEmptyCart(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -56,13 +55,13 @@ class CartScreenV2 extends StatelessWidget {
             width: 120,
             height: 120,
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: const Icon(
+            child: Icon(
               Icons.shopping_bag_outlined,
               size: 60,
-              color: AppColors.primary,
+              color: Theme.of(context).colorScheme.primary,
             ),
           ),
           const SizedBox(height: 24),
@@ -71,7 +70,7 @@ class CartScreenV2 extends StatelessWidget {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
-              color: isDarkMode ? Colors.white : Colors.black,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 12),
@@ -79,7 +78,7 @@ class CartScreenV2 extends StatelessWidget {
             'Add items to get started',
             style: TextStyle(
               fontSize: 14,
-              color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           const SizedBox(height: 32),
@@ -94,7 +93,6 @@ class CartScreenV2 extends StatelessWidget {
 
   Widget _buildCartContent(
     BuildContext context,
-    bool isDarkMode,
     CartProvider cartProvider,
   ) {
     return Column(
@@ -107,12 +105,12 @@ class CartScreenV2 extends StatelessWidget {
               final item = cartProvider.items[index];
               return Padding(
                 padding: const EdgeInsets.only(bottom: 16),
-                child: _buildCartItem(context, item, index, isDarkMode, cartProvider),
+                child: _buildCartItem(context, item, index, cartProvider),
               );
             },
           ),
         ),
-        _buildBottomSection(context, isDarkMode, cartProvider),
+        _buildBottomSection(context, cartProvider),
       ],
     );
   }
@@ -121,16 +119,15 @@ class CartScreenV2 extends StatelessWidget {
     BuildContext context,
     dynamic item,
     int index,
-    bool isDarkMode,
     CartProvider cartProvider,
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: isDarkMode ? const Color(0xFF2A2A3E) : Colors.white,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -153,12 +150,12 @@ class CartScreenV2 extends StatelessWidget {
                     width: 80,
                     height: 80,
                     decoration: BoxDecoration(
-                      color: AppColors.imagePlaceholder,
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.fastfood,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       size: 32,
                     ),
                   );
@@ -178,7 +175,7 @@ class CartScreenV2 extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: isDarkMode ? Colors.white : Colors.black,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -188,7 +185,7 @@ class CartScreenV2 extends StatelessWidget {
                     CurrencyFormatter.format(item.menuItem.price),
                     style: TextStyle(
                       fontSize: 14,
-                      color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -199,7 +196,6 @@ class CartScreenV2 extends StatelessWidget {
                         context,
                         Icons.remove,
                         () => cartProvider.updateQuantity(index, item.quantity - 1),
-                        isDarkMode,
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -208,7 +204,7 @@ class CartScreenV2 extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
-                            color: isDarkMode ? Colors.white : Colors.black,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ),
@@ -216,7 +212,6 @@ class CartScreenV2 extends StatelessWidget {
                         context,
                         Icons.add,
                         () => cartProvider.updateQuantity(index, item.quantity + 1),
-                        isDarkMode,
                       ),
                     ],
                   ),
@@ -228,7 +223,7 @@ class CartScreenV2 extends StatelessWidget {
             IconButton(
               icon: Icon(
                 Icons.close,
-                color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 size: 20,
               ),
               onPressed: () => cartProvider.removeItem(index),
@@ -243,7 +238,6 @@ class CartScreenV2 extends StatelessWidget {
     BuildContext context,
     IconData icon,
     VoidCallback onPressed,
-    bool isDarkMode,
   ) {
     return InkWell(
       onTap: onPressed,
@@ -252,15 +246,13 @@ class CartScreenV2 extends StatelessWidget {
         width: 32,
         height: 32,
         decoration: BoxDecoration(
-          color: isDarkMode 
-              ? const Color(0xFF3A3A4E) 
-              : Colors.grey[200],
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(
           icon,
           size: 16,
-          color: isDarkMode ? Colors.white : Colors.black,
+          color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
     );
@@ -268,19 +260,18 @@ class CartScreenV2 extends StatelessWidget {
 
   Widget _buildBottomSection(
     BuildContext context,
-    bool isDarkMode,
     CartProvider cartProvider,
   ) {
     return Container(
       decoration: BoxDecoration(
-        color: isDarkMode ? const Color(0xFF2A2A3E) : Colors.white,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(24),
           topRight: Radius.circular(24),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
             blurRadius: 20,
             offset: const Offset(0, -5),
           ),
@@ -295,9 +286,7 @@ class CartScreenV2 extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: isDarkMode 
-                    ? const Color(0xFF1E1E2E) 
-                    : const Color(0xFFF5F5F5),
+                color: Theme.of(context).scaffoldBackgroundColor,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -334,7 +323,7 @@ class CartScreenV2 extends StatelessWidget {
                           'Building 24, Academic Belt Road, Dhahran 31261',
                           style: TextStyle(
                             fontSize: 13,
-                            color: isDarkMode ? Colors.white : Colors.black,
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontWeight: FontWeight.w500,
                           ),
                           maxLines: 1,
@@ -346,7 +335,7 @@ class CartScreenV2 extends StatelessWidget {
                   Icon(
                     Icons.arrow_forward_ios,
                     size: 16,
-                    color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ],
               ),
@@ -356,28 +345,28 @@ class CartScreenV2 extends StatelessWidget {
             
             // Price Breakdown
             _buildPriceRow(
+              context,
               'Subtotal',
               CurrencyFormatter.format(cartProvider.subtotal),
-              isDarkMode,
             ),
             const SizedBox(height: 8),
             _buildPriceRow(
+              context,
               'Delivery Fee',
               cartProvider.deliveryFee > 0 
                   ? CurrencyFormatter.format(cartProvider.deliveryFee)
                   : 'FREE',
-              isDarkMode,
             ),
             const SizedBox(height: 8),
             _buildPriceRow(
+              context,
               'VAT (15%)',
               CurrencyFormatter.format(cartProvider.tax),
-              isDarkMode,
             ),
             
             const SizedBox(height: 12),
             Divider(
-              color: isDarkMode ? Colors.grey[800] : Colors.grey[300],
+              color: Theme.of(context).colorScheme.outline,
               thickness: 1,
             ),
             const SizedBox(height: 12),
@@ -390,7 +379,7 @@ class CartScreenV2 extends StatelessWidget {
                   'Total:',
                   style: TextStyle(
                     fontSize: 16,
-                    color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 Text(
@@ -398,7 +387,7 @@ class CartScreenV2 extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: isDarkMode ? Colors.white : Colors.black,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ],
@@ -445,7 +434,7 @@ class CartScreenV2 extends StatelessWidget {
     );
   }
 
-  Widget _buildPriceRow(String label, String value, bool isDarkMode) {
+  Widget _buildPriceRow(BuildContext context, String label, String value) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -453,7 +442,7 @@ class CartScreenV2 extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 14,
-            color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         Text(
@@ -461,7 +450,7 @@ class CartScreenV2 extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w500,
-            color: isDarkMode ? Colors.white : Colors.black,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ],

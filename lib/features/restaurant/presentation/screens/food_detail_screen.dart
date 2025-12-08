@@ -97,7 +97,6 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
     final result = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
-        final isDarkMode = Theme.of(context).brightness == Brightness.dark;
         return AlertDialog(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           title: Text(
@@ -109,9 +108,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
           content: Text(
             'You have items from ${cartProvider.restaurantName} in your cart. Do you want to clear those items and add ${widget.menuItem.name} from ${widget.restaurant.name} instead?',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: isDarkMode
-                      ? AppColors.darkTextSecondary
-                      : AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
           ),
           shape: RoundedRectangleBorder(
@@ -123,9 +120,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
               child: Text(
                 'CANCEL',
                 style: TextStyle(
-                  color: isDarkMode
-                      ? AppColors.darkTextSecondary
-                      : AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ),
@@ -216,8 +211,6 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: CustomScrollView(
@@ -272,13 +265,11 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                     fit: BoxFit.cover,
                     errorBuilder: (context, error, stackTrace) {
                       return Container(
-                        color: isDarkMode
-                            ? AppColors.darkImagePlaceholder
-                            : AppColors.imagePlaceholder,
-                        child: const Icon(
+                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        child: Icon(
                           Icons.fastfood,
                           size: 64,
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       );
                     },
@@ -366,9 +357,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                       Text(
                         '(${widget.menuItem.reviewCount} reviews)',
                         style: TextStyle(
-                          color: isDarkMode
-                              ? AppColors.darkTextSecondary
-                              : AppColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                       if (widget.menuItem.isVegetarian) ...[
@@ -411,9 +400,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                   Text(
                     widget.menuItem.description,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: isDarkMode
-                              ? AppColors.darkTextSecondary
-                              : AppColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           height: 1.5,
                         ),
                   ),
@@ -439,9 +426,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                             vertical: 8,
                           ),
                           decoration: BoxDecoration(
-                            color: isDarkMode
-                                ? AppColors.darkCardBackground
-                                : AppColors.cardBackground,
+                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
@@ -457,7 +442,7 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                   // Customizations
                   if (widget.menuItem.customizations.isNotEmpty) ...[
                     for (var option in widget.menuItem.customizations) ...[
-                      _buildCustomizationSection(option, isDarkMode),
+                      _buildCustomizationSection(option),
                       const SizedBox(height: 20),
                     ],
                   ],
@@ -531,7 +516,6 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
 
   Widget _buildCustomizationSection(
     CustomizationOption option,
-    bool isDarkMode,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -593,17 +577,13 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? AppColors.primary.withOpacity(0.1)
-                      : isDarkMode
-                          ? AppColors.darkCardBackground
-                          : AppColors.cardBackground,
+                      ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                      : Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: isSelected
-                        ? AppColors.primary
-                        : isDarkMode
-                            ? AppColors.darkBorder
-                            : AppColors.lightBorder,
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.outline,
                     width: isSelected ? 2 : 1,
                   ),
                 ),
@@ -630,15 +610,13 @@ class _FoodDetailScreenState extends State<FoodDetailScreen> {
                                     ),
                           ),
                         const SizedBox(width: 8),
-                        Icon(
-                          isSelected
+                          Icon(
+                            isSelected
                               ? Icons.check_circle
                               : Icons.circle_outlined,
                           color: isSelected
-                              ? AppColors.primary
-                              : isDarkMode
-                                  ? AppColors.darkTextSecondary
-                                  : AppColors.textSecondary,
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ],
                     ),

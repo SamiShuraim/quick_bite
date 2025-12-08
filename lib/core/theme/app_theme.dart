@@ -21,11 +21,16 @@ class AppTheme {
         primary: AppColors.primary,
         secondary: AppColors.primaryLight,
         surface: AppColors.surface,
+        surfaceContainerHighest: AppColors.cardBackground,
         error: AppColors.error,
         onPrimary: AppColors.textOnPrimary,
         onSecondary: AppColors.textOnPrimary,
         onSurface: AppColors.textPrimary,
+        onSurfaceVariant: AppColors.textSecondary,
         onError: AppColors.textOnPrimary,
+        outline: AppColors.divider,
+        outlineVariant: AppColors.lightBorder,
+        shadow: AppColors.shadow,
       ),
       
       // Scaffold
@@ -89,11 +94,16 @@ class AppTheme {
         primary: AppColors.primary,
         secondary: AppColors.primaryLight,
         surface: AppColors.darkSurface,
+        surfaceContainerHighest: AppColors.darkCardBackground,
         error: AppColors.error,
         onPrimary: AppColors.textOnPrimary,
         onSecondary: AppColors.textOnPrimary,
         onSurface: AppColors.darkTextPrimary,
+        onSurfaceVariant: AppColors.darkTextSecondary,
         onError: AppColors.textOnPrimary,
+        outline: AppColors.darkDivider,
+        outlineVariant: AppColors.darkBorder,
+        shadow: AppColors.shadow,
       ),
       
       // Scaffold

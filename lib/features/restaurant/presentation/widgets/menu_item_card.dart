@@ -19,17 +19,15 @@ class MenuItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return GestureDetector(
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: isDarkMode ? AppColors.darkCardBackground : Colors.white,
+          color: Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: AppColors.shadow,
+              color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -52,13 +50,11 @@ class MenuItemCard extends StatelessWidget {
                   return Container(
                     width: 120,
                     height: 120,
-                    color: isDarkMode
-                        ? AppColors.darkImagePlaceholder
-                        : AppColors.imagePlaceholder,
-                    child: const Icon(
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    child: Icon(
                       Icons.fastfood,
                       size: 32,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   );
                 },
@@ -112,9 +108,7 @@ class MenuItemCard extends StatelessWidget {
                     Text(
                       menuItem.description,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: isDarkMode
-                                ? AppColors.darkTextSecondary
-                                : AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -144,9 +138,7 @@ class MenuItemCard extends StatelessWidget {
                             Text(
                               ' (${menuItem.reviewCount})',
                               style: TextStyle(
-                                color: isDarkMode
-                                    ? AppColors.darkTextSecondary
-                                    : AppColors.textSecondary,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                                 fontSize: 12,
                               ),
                             ),

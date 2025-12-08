@@ -42,8 +42,6 @@ class _FilterScreenState extends State<FilterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
@@ -101,17 +99,13 @@ class _FilterScreenState extends State<FilterScreen> {
                 Text(
                   '${_priceRange.start.round()} SAR',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: isDarkMode
-                            ? AppColors.darkTextSecondary
-                            : AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                 ),
                 Text(
                   '${_priceRange.end.round()} SAR',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: isDarkMode
-                            ? AppColors.darkTextSecondary
-                            : AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                 ),
               ],
@@ -143,9 +137,7 @@ class _FilterScreenState extends State<FilterScreen> {
             Text(
               'Up to ${_maxDistance.round()} km',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: isDarkMode
-                        ? AppColors.darkTextSecondary
-                        : AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
             ),
 
@@ -176,17 +168,13 @@ class _FilterScreenState extends State<FilterScreen> {
                       }
                     });
                   },
-                  selectedColor: AppColors.primary.withOpacity(0.2),
-                  checkmarkColor: AppColors.primary,
-                  backgroundColor: isDarkMode
-                      ? AppColors.darkCardBackground
-                      : AppColors.cardBackground,
+                  selectedColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                  checkmarkColor: Theme.of(context).colorScheme.primary,
+                  backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                   labelStyle: TextStyle(
                     color: isSelected
-                        ? AppColors.primary
-                        : (isDarkMode
-                            ? AppColors.darkTextPrimary
-                            : AppColors.textPrimary),
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.onSurface,
                     fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                   ),
                 );

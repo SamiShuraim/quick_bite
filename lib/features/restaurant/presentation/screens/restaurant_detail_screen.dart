@@ -92,7 +92,6 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final cartProvider = Provider.of<CartProvider>(context);
 
     return Scaffold(
@@ -183,13 +182,11 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
-                    color: isDarkMode
-                        ? AppColors.darkImagePlaceholder
-                        : AppColors.imagePlaceholder,
-                    child: const Icon(
+                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    child: Icon(
                       Icons.restaurant,
                       size: 64,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   );
                 },
@@ -253,9 +250,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                   Text(
                     widget.restaurant.description,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: isDarkMode
-                              ? AppColors.darkTextSecondary
-                              : AppColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                   ),
 
@@ -317,26 +312,22 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                           vertical: 12,
                         ),
                         decoration: BoxDecoration(
+                        color: isSelected
+                            ? Theme.of(context).colorScheme.primary
+                            : Theme.of(context).colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                      child: Text(
+                        category,
+                        style: TextStyle(
                           color: isSelected
-                              ? AppColors.primary
-                              : isDarkMode
-                                  ? AppColors.darkCardBackground
-                                  : AppColors.cardBackground,
-                          borderRadius: BorderRadius.circular(25),
+                              ? Theme.of(context).colorScheme.onPrimary
+                              : Theme.of(context).colorScheme.onSurface,
+                          fontWeight: isSelected
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                         ),
-                        child: Text(
-                          category,
-                          style: TextStyle(
-                            color: isSelected
-                                ? Colors.white
-                                : isDarkMode
-                                    ? AppColors.darkTextPrimary
-                                    : AppColors.textPrimary,
-                            fontWeight: isSelected
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                          ),
-                        ),
+                      ),
                       ),
                     ),
                   );
@@ -362,9 +353,7 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
                 child: Text(
                   'No menu items available',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: isDarkMode
-                            ? AppColors.darkTextSecondary
-                            : AppColors.textSecondary,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                 ),
               ),
@@ -412,13 +401,10 @@ class _RestaurantDetailScreenState extends State<RestaurantDetailScreen> {
   }
 
   Widget _buildInfoChip(BuildContext context, IconData icon, String label) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: isDarkMode
-            ? AppColors.darkCardBackground
-            : AppColors.cardBackground,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(

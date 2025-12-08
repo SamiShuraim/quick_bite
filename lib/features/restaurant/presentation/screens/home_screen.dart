@@ -83,9 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         const SizedBox(width: 4),
                         Icon(
                           Icons.keyboard_arrow_down,
-                          color: isDarkMode
-                              ? AppColors.darkTextPrimary
-                              : AppColors.textPrimary,
+                          color: Theme.of(context).colorScheme.onSurface,
                           size: 20,
                         ),
                       ],
@@ -146,9 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       Expanded(
                         child: Container(
                           decoration: BoxDecoration(
-                            color: isDarkMode
-                                ? AppColors.darkCardBackground
-                                : AppColors.cardBackground,
+                            color: Theme.of(context).colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: TextField(
@@ -160,9 +156,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               hintText: 'Search dishes, restaurants',
                               prefixIcon: Icon(
                                 Icons.search,
-                                color: isDarkMode
-                                    ? AppColors.darkTextSecondary
-                                    : AppColors.textSecondary,
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
                               border: InputBorder.none,
                               contentPadding: const EdgeInsets.symmetric(
@@ -357,9 +351,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               Text(
                                 '${restaurantProvider.restaurants.length} restaurant${restaurantProvider.restaurants.length != 1 ? "s" : ""} found',
                                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: isDarkMode
-                                          ? AppColors.darkTextSecondary
-                                          : AppColors.textSecondary,
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                                     ),
                               ),
                             ],
@@ -384,18 +376,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         Icon(
                           Icons.restaurant_outlined,
                           size: 64,
-                          color: isDarkMode
-                              ? AppColors.darkTextSecondary
-                              : AppColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                         const SizedBox(height: 16),
                         Text(
                           'No restaurants found',
                           style:
                               Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    color: isDarkMode
-                                        ? AppColors.darkTextSecondary
-                                        : AppColors.textSecondary,
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   ),
                         ),
                       ],

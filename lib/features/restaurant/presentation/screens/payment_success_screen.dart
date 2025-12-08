@@ -18,21 +18,19 @@ class PaymentSuccessScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
-      backgroundColor: isDarkMode ? const Color(0xFF0A0A0F) : const Color(0xFFF5F5F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Center(
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 20),
             padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: isDarkMode ? const Color(0xFF1E1E2E) : Colors.white,
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(24),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
+                  color: Theme.of(context).colorScheme.shadow.withOpacity(0.1),
                   blurRadius: 20,
                   offset: const Offset(0, 10),
                 ),
@@ -74,7 +72,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
-                    color: isDarkMode ? Colors.white : Colors.black,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 
@@ -86,7 +84,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 14,
-                    color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 
@@ -96,7 +94,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: isDarkMode ? const Color(0xFF2A2A3E) : const Color(0xFFF5F5F5),
+                    color: Theme.of(context).scaffoldBackgroundColor,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(
@@ -107,27 +105,27 @@ class PaymentSuccessScreen extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w600,
-                          color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           letterSpacing: 0.5,
                         ),
                       ),
                       const SizedBox(height: 12),
                       _buildDetailRow(
+                        context,
                         'Order Number',
                         order.orderNumber,
-                        isDarkMode,
                       ),
                       const SizedBox(height: 8),
                       _buildDetailRow(
+                        context,
                         'Restaurant',
                         order.restaurantName,
-                        isDarkMode,
                       ),
                       const SizedBox(height: 8),
                       _buildDetailRow(
+                        context,
                         'Total Amount',
                         CurrencyFormatter.format(order.total),
-                        isDarkMode,
                         isHighlight: true,
                       ),
                     ],
@@ -176,7 +174,7 @@ class PaymentSuccessScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDetailRow(String label, String value, bool isDarkMode, {bool isHighlight = false}) {
+  Widget _buildDetailRow(BuildContext context, String label, String value, {bool isHighlight = false}) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -184,7 +182,7 @@ class PaymentSuccessScreen extends StatelessWidget {
           label,
           style: TextStyle(
             fontSize: 14,
-            color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         Text(
@@ -193,8 +191,8 @@ class PaymentSuccessScreen extends StatelessWidget {
             fontSize: 14,
             fontWeight: isHighlight ? FontWeight.bold : FontWeight.w600,
             color: isHighlight
-                ? AppColors.primary
-                : (isDarkMode ? Colors.white : Colors.black),
+                ? Theme.of(context).colorScheme.primary
+                : Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ],
