@@ -27,7 +27,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final authProvider = Provider.of<AuthProvider>(context);
     final themeProvider = Provider.of<ThemeProvider>(context);
     final user = authProvider.user;
@@ -89,9 +88,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Text(
                       user?.email ?? 'guest@example.com',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: isDarkMode
-                                ? AppColors.darkTextSecondary
-                                : AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                     ),
                   ],
@@ -104,9 +101,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 24),
                 decoration: BoxDecoration(
-                  color: isDarkMode
-                      ? AppColors.darkCardBackground
-                      : AppColors.cardBackground,
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
@@ -114,12 +109,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     // Theme Toggle
                     _buildSettingItem(
                       context,
-                      icon: isDarkMode
+                      icon: Theme.of(context).brightness == Brightness.dark
                           ? Icons.dark_mode
                           : Icons.light_mode,
                       title: 'Dark Mode',
                       trailing: Switch(
-                        value: isDarkMode,
+                        value: Theme.of(context).brightness == Brightness.dark,
                         onChanged: (value) {
                           themeProvider.setThemeMode(
                             value ? ThemeMode.dark : ThemeMode.light,
@@ -138,9 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 24),
                 decoration: BoxDecoration(
-                  color: isDarkMode
-                      ? AppColors.darkCardBackground
-                      : AppColors.cardBackground,
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
@@ -155,7 +148,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       },
                     ),
                     
-                    _buildDivider(isDarkMode),
+                    _buildDivider(),
                     
                     _buildMenuItem(
                       context,
@@ -204,9 +197,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Text(
                 'Version ${AppConstants.appVersion}',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: isDarkMode
-                          ? AppColors.darkTextSecondary
-                          : AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
               ),
               
@@ -262,8 +253,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     required String title,
     required VoidCallback onTap,
   }) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
@@ -295,9 +284,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             Icon(
               Icons.chevron_right,
-              color: isDarkMode
-                  ? AppColors.darkTextSecondary
-                  : AppColors.textSecondary,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ],
         ),
@@ -305,14 +292,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
   
-  Widget _buildDivider(bool isDarkMode) {
+  Widget _buildDivider() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Divider(
         height: 1,
-        color: isDarkMode
-            ? AppColors.darkDivider
-            : AppColors.divider,
+        color: Theme.of(context).colorScheme.outlineVariant,
       ),
     );
   }

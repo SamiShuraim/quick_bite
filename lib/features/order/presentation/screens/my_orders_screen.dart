@@ -50,7 +50,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
   
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    
     final orderProvider = Provider.of<OrderProvider>(context);
     
     return Scaffold(
@@ -70,19 +70,19 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(horizontal: 24),
                 children: [
-                  _buildFilterChip('All', null, isDarkMode),
+                  _buildFilterChip(context, 'All', null),
                   const SizedBox(width: 8),
-                  _buildFilterChip('Pending', 'pending', isDarkMode),
+                  _buildFilterChip(context, 'Pending', 'pending'),
                   const SizedBox(width: 8),
-                  _buildFilterChip('Preparing', 'confirmed', isDarkMode),
+                  _buildFilterChip(context, 'Preparing', 'confirmed'),
                   const SizedBox(width: 8),
-                  _buildFilterChip('On the Way', 'on_the_way', isDarkMode),
+                  _buildFilterChip(context, 'On the Way', 'on_the_way'),
                   const SizedBox(width: 8),
-                  _buildFilterChip('Arriving Soon', 'arriving_soon', isDarkMode),
+                  _buildFilterChip(context, 'Arriving Soon', 'arriving_soon'),
                   const SizedBox(width: 8),
-                  _buildFilterChip('Delivered', 'delivered', isDarkMode),
+                  _buildFilterChip(context, 'Delivered', 'delivered'),
                   const SizedBox(width: 8),
-                  _buildFilterChip('Cancelled', 'cancelled', isDarkMode),
+                  _buildFilterChip(context, 'Cancelled', 'cancelled'),
                 ],
               ),
             ),
@@ -94,7 +94,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                 child: orderProvider.isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : orderProvider.orders.isEmpty
-                        ? _buildEmptyState(context, isDarkMode)
+                        ? _buildEmptyState(context)
                         : ListView.builder(
                             padding: const EdgeInsets.all(24),
                             itemCount: orderProvider.orders.length,
@@ -102,7 +102,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                               final order = orderProvider.orders[index];
                               return Padding(
                                 padding: const EdgeInsets.only(bottom: 16),
-                                child: _buildOrderCard(context, order, isDarkMode),
+                                child: _buildOrderCard(context, order),
                               );
                             },
                           ),
@@ -114,7 +114,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
     );
   }
   
-  Widget _buildFilterChip(String label, String? status, bool isDarkMode) {
+  Widget _buildFilterChip(BuildContext context, String label, String? status) {
     final isSelected = _selectedStatus == status;
     
     return GestureDetector(
@@ -129,16 +129,12 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
         decoration: BoxDecoration(
           color: isSelected
               ? AppColors.primary
-              : isDarkMode
-                  ? AppColors.darkCardBackground
-                  : AppColors.cardBackground,
+              : Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected
                 ? AppColors.primary
-                : isDarkMode
-                    ? AppColors.darkDivider
-                    : AppColors.divider,
+                : Theme.of(context).colorScheme.outlineVariant,
           ),
         ),
         child: Text(
@@ -146,9 +142,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
           style: TextStyle(
             color: isSelected
                 ? Colors.white
-                : isDarkMode
-                    ? AppColors.darkTextPrimary
-                    : AppColors.textPrimary,
+                : Theme.of(context).colorScheme.onSurface,
             fontWeight: isSelected
                 ? AppConstants.fontWeightSemiBold
                 : AppConstants.fontWeightMedium,
@@ -159,12 +153,10 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
     );
   }
   
-  Widget _buildOrderCard(BuildContext context, OrderEntity order, bool isDarkMode) {
+  Widget _buildOrderCard(BuildContext context, OrderEntity order) {
     return Container(
       decoration: BoxDecoration(
-        color: isDarkMode
-            ? AppColors.darkCardBackground
-            : AppColors.cardBackground,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -202,7 +194,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                             fontWeight: AppConstants.fontWeightBold,
                           ),
                     ),
-                    _buildStatusChip(order.status, isDarkMode),
+                    _buildStatusChip(context, order.status),
                   ],
                 ),
                 
@@ -214,18 +206,14 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                     Icon(
                       Icons.restaurant,
                       size: 16,
-                      color: isDarkMode
-                          ? AppColors.darkTextSecondary
-                          : AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         order.restaurantName,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: isDarkMode
-                                  ? AppColors.darkTextSecondary
-                                  : AppColors.textSecondary,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                       ),
                     ),
@@ -240,17 +228,13 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                     Icon(
                       Icons.shopping_bag_outlined,
                       size: 16,
-                      color: isDarkMode
-                          ? AppColors.darkTextSecondary
-                          : AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       '${order.items.length} items',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: isDarkMode
-                                ? AppColors.darkTextSecondary
-                                : AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                     ),
                   ],
@@ -276,9 +260,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                     Text(
                       DateFormat('MMM dd, yyyy').format(order.createdAt),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: isDarkMode
-                                ? AppColors.darkTextSecondary
-                                : AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                     ),
                   ],
@@ -352,7 +334,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
     );
   }
   
-  Widget _buildStatusChip(String status, bool isDarkMode) {
+  Widget _buildStatusChip(BuildContext context, String status) {
     Color backgroundColor;
     Color textColor;
     String displayText;
@@ -411,7 +393,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
     );
   }
   
-  Widget _buildEmptyState(BuildContext context, bool isDarkMode) {
+  Widget _buildEmptyState(BuildContext context) {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -419,9 +401,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
           Icon(
             Icons.receipt_long_outlined,
             size: 80,
-            color: isDarkMode
-                ? AppColors.darkTextSecondary
-                : AppColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           const SizedBox(height: 24),
           Text(
@@ -434,9 +414,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
           Text(
             'Your order history will appear here',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: isDarkMode
-                      ? AppColors.darkTextSecondary
-                      : AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
           ),
         ],

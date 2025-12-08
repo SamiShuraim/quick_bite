@@ -38,8 +38,6 @@ class _MainNavigationState extends State<MainNavigation> {
   
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
@@ -67,13 +65,9 @@ class _MainNavigationState extends State<MainNavigation> {
             );
           },
           type: BottomNavigationBarType.fixed,
-          backgroundColor: isDarkMode
-              ? AppColors.darkCardBackground
-              : Colors.white,
+          backgroundColor: Theme.of(context).colorScheme.surface,
           selectedItemColor: AppColors.primary,
-          unselectedItemColor: isDarkMode
-              ? AppColors.darkTextSecondary
-              : AppColors.textSecondary,
+          unselectedItemColor: Theme.of(context).colorScheme.onSurfaceVariant,
           selectedFontSize: 12,
           unselectedFontSize: 12,
           elevation: 0,

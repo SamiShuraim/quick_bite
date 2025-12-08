@@ -40,7 +40,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final restaurantProvider = Provider.of<RestaurantProvider>(context);
     final cartProvider = Provider.of<CartProvider>(context);
 

@@ -88,18 +88,17 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final paymentProvider = Provider.of<PaymentProvider>(context);
     
     return Scaffold(
-      backgroundColor: isDarkMode ? const Color(0xFF1E1E2E) : const Color(0xFFF5F5F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: isDarkMode ? const Color(0xFF1E1E2E) : const Color(0xFFF5F5F5),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: isDarkMode ? Colors.white : Colors.black,
+            color: Theme.of(context).colorScheme.onSurface,
             size: 20,
           ),
           onPressed: () => Navigator.pop(context),
@@ -107,7 +106,7 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
         title: Text(
           isCheckoutMode ? 'Payment' : 'Payment Methods',
           style: TextStyle(
-            color: isDarkMode ? Colors.white : Colors.black,
+            color: Theme.of(context).colorScheme.onSurface,
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -134,9 +133,9 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
                                 child: Padding(
                                   padding: const EdgeInsets.only(right: 12),
                                   child: _buildPaymentMethodCard(
+                                    context: context,
                                     method: method,
                                     isSelected: _selectedPaymentMethod == method['id'],
-                                    isDarkMode: isDarkMode,
                                   ),
                                 ),
                               );
@@ -146,7 +145,7 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
                           const SizedBox(height: 24),
                           
                           // Card Section
-                          _buildCardSection(isDarkMode, paymentProvider),
+                          _buildCardSection(context, paymentProvider),
                           
                   const SizedBox(height: 24),
                   
@@ -210,16 +209,16 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
           
           // Bottom Section - only show in checkout mode
           if (isCheckoutMode)
-            _buildBottomSection(context, isDarkMode),
+            _buildBottomSection(context),
         ],
       ),
     );
   }
 
   Widget _buildPaymentMethodCard({
+    required BuildContext context,
     required Map<String, dynamic> method,
     required bool isSelected,
-    required bool isDarkMode,
   }) {
     return GestureDetector(
       onTap: () {
@@ -230,7 +229,7 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         decoration: BoxDecoration(
-          color: isDarkMode ? const Color(0xFF2A2A3E) : Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected 
@@ -318,7 +317,7 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: isDarkMode ? Colors.white : Colors.black,
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
           ],
@@ -327,7 +326,7 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
     );
   }
 
-  Widget _buildCardSection(bool isDarkMode, PaymentProvider paymentProvider) {
+  Widget _buildCardSection(BuildContext context, PaymentProvider paymentProvider) {
     if (_selectedPaymentMethod == 'cash') {
       return Container(
         padding: const EdgeInsets.all(20),
@@ -398,7 +397,7 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
       return Container(
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: isDarkMode ? const Color(0xFF2A2A3E) : Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: AppColors.primary.withOpacity(0.3),
@@ -411,13 +410,13 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
             Icon(
               Icons.credit_card_outlined,
               size: 48,
-              color: isDarkMode ? Colors.grey[600] : Colors.grey[400],
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             const SizedBox(height: 12),
             Text(
               'No saved ${_selectedPaymentMethod.toUpperCase()} cards',
               style: TextStyle(
-                color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 fontSize: 14,
               ),
             ),
@@ -425,7 +424,7 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
             Text(
               'Add a card to continue',
               style: TextStyle(
-                color: isDarkMode ? Colors.grey[600] : Colors.grey[400],
+                color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.7),
                 fontSize: 12,
               ),
             ),
@@ -451,13 +450,13 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
         final isSelected = _selectedCard?.id == card.id;
         return Padding(
           padding: const EdgeInsets.only(bottom: 12),
-          child: _buildCardDisplay(card, isDarkMode, paymentProvider, isSelected),
+          child: _buildCardDisplay(context, card, paymentProvider, isSelected),
         );
       }).toList(),
     );
   }
 
-  Widget _buildCardDisplay(SavedCardEntity card, bool isDarkMode, PaymentProvider paymentProvider, bool isSelected) {
+  Widget _buildCardDisplay(BuildContext context, SavedCardEntity card, PaymentProvider paymentProvider, bool isSelected) {
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -641,12 +640,12 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
     );
   }
 
-  Widget _buildBottomSection(BuildContext context, bool isDarkMode) {
+  Widget _buildBottomSection(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
     
     return Container(
       decoration: BoxDecoration(
-        color: isDarkMode ? const Color(0xFF2A2A3E) : Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(24),
           topRight: Radius.circular(24),
@@ -672,7 +671,7 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
                   'Total:',
                   style: TextStyle(
                     fontSize: 16,
-                    color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 Text(
@@ -680,7 +679,7 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: isDarkMode ? Colors.white : Colors.black,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ],

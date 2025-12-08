@@ -16,7 +16,6 @@ class CartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final cartProvider = Provider.of<CartProvider>(context);
 
     return Scaffold(
@@ -70,26 +69,20 @@ class CartScreen extends StatelessWidget {
                   Icon(
                     Icons.shopping_bag_outlined,
                     size: 100,
-                    color: isDarkMode
-                        ? AppColors.darkTextSecondary
-                        : AppColors.textSecondary,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   const SizedBox(height: 24),
                   Text(
                     'Your cart is empty',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: isDarkMode
-                              ? AppColors.darkTextSecondary
-                              : AppColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                   ),
                   const SizedBox(height: 12),
                   Text(
                     'Add items to get started',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: isDarkMode
-                              ? AppColors.darkTextSecondary
-                              : AppColors.textSecondary,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                   ),
                   const SizedBox(height: 32),
@@ -114,9 +107,7 @@ class CartScreen extends StatelessWidget {
                         ),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: isDarkMode
-                                ? AppColors.darkCardBackground
-                                : Colors.white,
+                            color: Theme.of(context).colorScheme.surface,
                             borderRadius: BorderRadius.circular(16),
                             boxShadow: [
                               BoxShadow(
@@ -143,12 +134,10 @@ class CartScreen extends StatelessWidget {
                                     return Container(
                                       width: 100,
                                       height: 100,
-                                      color: isDarkMode
-                                          ? AppColors.darkImagePlaceholder
-                                          : AppColors.imagePlaceholder,
-                                      child: const Icon(
+                                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                                      child: Icon(
                                         Icons.fastfood,
-                                        color: Colors.white,
+                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                                       ),
                                     );
                                   },
@@ -194,11 +183,7 @@ class CartScreen extends StatelessWidget {
                                                   .textTheme
                                                   .bodySmall
                                                   ?.copyWith(
-                                                    color: isDarkMode
-                                                        ? AppColors
-                                                            .darkTextSecondary
-                                                        : AppColors
-                                                            .textSecondary,
+                                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                                                   ),
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
@@ -297,7 +282,6 @@ class CartScreen extends StatelessWidget {
                         context,
                         'Subtotal',
                         CurrencyFormatter.format(cartProvider.subtotal),
-                        isDarkMode,
                       ),
                       const SizedBox(height: 8),
                       _buildSummaryRow(
@@ -306,21 +290,18 @@ class CartScreen extends StatelessWidget {
                         cartProvider.deliveryFee == 0
                             ? 'FREE'
                             : CurrencyFormatter.format(cartProvider.deliveryFee),
-                        isDarkMode,
                       ),
                       const SizedBox(height: 8),
                       _buildSummaryRow(
                         context,
                         'VAT (15%)',
                         CurrencyFormatter.format(cartProvider.tax),
-                        isDarkMode,
                       ),
                       const Divider(height: 24),
                       _buildSummaryRow(
                         context,
                         'Total',
                         CurrencyFormatter.format(cartProvider.total),
-                        isDarkMode,
                         isTotal: true,
                       ),
                       const SizedBox(height: 16),
@@ -368,8 +349,7 @@ class CartScreen extends StatelessWidget {
   Widget _buildSummaryRow(
     BuildContext context,
     String label,
-    String value,
-    bool isDarkMode, {
+    String value, {
     bool isTotal = false,
   }) {
     return Row(
@@ -379,12 +359,8 @@ class CartScreen extends StatelessWidget {
           label,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: isTotal
-                    ? (isDarkMode
-                        ? AppColors.darkTextPrimary
-                        : AppColors.textPrimary)
-                    : (isDarkMode
-                        ? AppColors.darkTextSecondary
-                        : AppColors.textSecondary),
+                    ? Theme.of(context).colorScheme.onSurface
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
                 fontWeight:
                     isTotal ? AppConstants.fontWeightBold : FontWeight.normal,
                 fontSize: isTotal ? 18 : 14,
