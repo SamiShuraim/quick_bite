@@ -1,6 +1,6 @@
 # QuickBite - Food Delivery Flutter Application
 
-QuickBite is a modern food delivery mobile application built with Flutter for the SWE 463 Mobile Application Development course at King Fahd University of Petroleum & Minerals.
+QuickBite is a modern food delivery mobile application built with Flutter for the SWE 463 Mobile Application Development course at KFUPM.
 
 ## 🎨 Features
 
@@ -21,20 +21,9 @@ Before you begin, ensure you have Flutter installed:
 - **Flutter SDK**: Version 3.9.0 or higher
 - **Dart SDK**: Version 3.9.0 or higher
 
-To check if Flutter is installed:
-```bash
-flutter --version
-```
+### Running the App
 
-If not installed, follow the [official Flutter installation guide](https://docs.flutter.dev/get-started/install).
-
-### Installation & Running
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/SamiShuraim/quick_bite.git
-   cd quick_bite
-   ```
+1. **Navigate to folder**
 
 2. **Install dependencies**
    ```bash

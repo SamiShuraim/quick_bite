@@ -51,7 +51,7 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
     {
       'id': 'mada',
       'name': 'Mada',
-      'color': const Color(0xFF1B5BA1),
+      'color': const Color(0xFFFFFFFF),
     },
   ];
 
@@ -270,7 +270,7 @@ class _UnifiedPaymentScreenState extends State<UnifiedPaymentScreen> {
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   color: method['id'] == 'mada' 
-                      ? const Color(0xFF1B5BA1) 
+                      ? const Color(0xFFFFFFFF)
                       : Colors.white,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(

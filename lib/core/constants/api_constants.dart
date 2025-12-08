@@ -5,11 +5,7 @@ library;
 class ApiConstants {
   ApiConstants._();
 
-  // Base URL - Using deployed backend on Render
   static const String baseUrl = 'https://quick-bite-fxch.onrender.com'; // Production backend
-  // static const String baseUrl = 'http://10.0.2.2:3000'; // For Android Emulator (local)
-  // static const String baseUrl = 'http://localhost:3000'; // For iOS Simulator (local)
-  // static const String baseUrl = 'http://192.168.x.x:3000'; // For physical device (use your computer's IP)
   
   static const String apiVersion = 'v1';
   static const String apiBasePath = '/api/$apiVersion';
