@@ -396,14 +396,13 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     }
   }
 
-  Widget _buildTimelineStep(context, BuildContext context, {
+  Widget _buildTimelineStep(BuildContext context, {
     required IconData icon,
     required String title,
     required String subtitle,
     required bool isCompleted,
     required bool isCurrent,
     required bool isLast,
-    
   }) {
     final isCancelled = _currentOrder.status == 'cancelled' && title == 'Order Cancelled';
     

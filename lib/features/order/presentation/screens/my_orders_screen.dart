@@ -14,6 +14,7 @@ import '../../../restaurant/presentation/providers/restaurant_provider.dart';
 import '../../../restaurant/domain/entities/order_entity.dart';
 import '../../../restaurant/domain/entities/cart_entity.dart';
 import '../../../restaurant/domain/entities/menu_item_entity.dart';
+import '../../../restaurant/domain/entities/restaurant_entity.dart';
 import '../../../restaurant/presentation/screens/cart_screen_v2.dart';
 import 'package:intl/intl.dart';
 import 'order_tracking_screen.dart';
@@ -128,16 +129,12 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
         decoration: BoxDecoration(
           color: isSelected
               ? AppColors.primary
-              : Theme.of(context).colorScheme.surface
-                  ? Theme.of(context).colorScheme.surfaceContainerHighest
-                  : AppColors.cardBackground,
+              : Theme.of(context).colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: isSelected
                 ? AppColors.primary
-                : Theme.of(context).colorScheme.surface
-                    ? Theme.of(context).colorScheme.outlineVariant
-                    : AppColors.divider,
+                : Theme.of(context).colorScheme.outlineVariant,
           ),
         ),
         child: Text(
@@ -145,9 +142,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
           style: TextStyle(
             color: isSelected
                 ? Colors.white
-                : Theme.of(context).colorScheme.surface
-                    ? Theme.of(context).colorScheme.onSurface
-                    : AppColors.textPrimary,
+                : Theme.of(context).colorScheme.onSurface,
             fontWeight: isSelected
                 ? AppConstants.fontWeightSemiBold
                 : AppConstants.fontWeightMedium,
@@ -161,9 +156,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
   Widget _buildOrderCard(BuildContext context, OrderEntity order) {
     return Container(
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surface
-            ? Theme.of(context).colorScheme.surfaceContainerHighest
-            : AppColors.cardBackground,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -213,18 +206,14 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                     Icon(
                       Icons.restaurant,
                       size: 16,
-                      color: Theme.of(context).colorScheme.surface
-                          ? Theme.of(context).colorScheme.onSurfaceVariant
-                          : AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         order.restaurantName,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.surface
-                                  ? Theme.of(context).colorScheme.onSurfaceVariant
-                                  : AppColors.textSecondary,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                       ),
                     ),
@@ -239,17 +228,13 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                     Icon(
                       Icons.shopping_bag_outlined,
                       size: 16,
-                      color: Theme.of(context).colorScheme.surface
-                          ? Theme.of(context).colorScheme.onSurfaceVariant
-                          : AppColors.textSecondary,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       '${order.items.length} items',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.surface
-                                ? Theme.of(context).colorScheme.onSurfaceVariant
-                                : AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                     ),
                   ],
@@ -275,9 +260,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
                     Text(
                       DateFormat('MMM dd, yyyy').format(order.createdAt),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.surface
-                                ? Theme.of(context).colorScheme.onSurfaceVariant
-                                : AppColors.textSecondary,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                     ),
                   ],
@@ -418,9 +401,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
           Icon(
             Icons.receipt_long_outlined,
             size: 80,
-            color: Theme.of(context).colorScheme.surface
-                ? Theme.of(context).colorScheme.onSurfaceVariant
-                : AppColors.textSecondary,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
           const SizedBox(height: 24),
           Text(
@@ -433,9 +414,7 @@ class _MyOrdersScreenState extends State<MyOrdersScreen> {
           Text(
             'Your order history will appear here',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.surface
-                      ? Theme.of(context).colorScheme.onSurfaceVariant
-                      : AppColors.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
           ),
         ],
