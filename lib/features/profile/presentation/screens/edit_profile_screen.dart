@@ -47,24 +47,22 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-    
     return Scaffold(
-      backgroundColor: isDarkMode ? const Color(0xFF0A0A0F) : const Color(0xFFF5F5F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: isDarkMode ? const Color(0xFF1E1E2E) : Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: isDarkMode ? Colors.white : Colors.black,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'Edit Profile',
           style: TextStyle(
-            color: isDarkMode ? Colors.white : Colors.black,
+            color: Theme.of(context).colorScheme.onSurface,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -81,7 +79,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: isDarkMode ? const Color(0xFF1E1E2E) : Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
@@ -99,7 +97,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: isDarkMode ? Colors.white : Colors.black,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                     const SizedBox(height: 20),
@@ -114,9 +112,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         filled: true,
-                        fillColor: isDarkMode 
-                            ? const Color(0xFF2A2A3E) 
-                            : const Color(0xFFF5F5F5),
+                        fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -135,7 +131,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: isDarkMode ? const Color(0xFF1E1E2E) : Colors.white,
+                  color: Theme.of(context).colorScheme.surface,
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
@@ -156,7 +152,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: isDarkMode ? Colors.white : Colors.black,
+                            color: Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                         TextButton(
@@ -201,9 +197,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           filled: true,
-                          fillColor: isDarkMode 
-                              ? const Color(0xFF2A2A3E) 
-                              : const Color(0xFFF5F5F5),
+                          fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                         ),
                         validator: (value) {
                           if (_isUpdatingPassword && (value == null || value.isEmpty)) {
@@ -238,9 +232,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           filled: true,
-                          fillColor: isDarkMode 
-                              ? const Color(0xFF2A2A3E) 
-                              : const Color(0xFFF5F5F5),
+                          fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                         ),
                         validator: (value) {
                           if (_isUpdatingPassword) {
@@ -280,9 +272,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             borderRadius: BorderRadius.circular(12),
                           ),
                           filled: true,
-                          fillColor: isDarkMode 
-                              ? const Color(0xFF2A2A3E) 
-                              : const Color(0xFFF5F5F5),
+                          fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                         ),
                         validator: (value) {
                           if (_isUpdatingPassword) {
@@ -302,7 +292,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         'Click "Update" to change your password',
                         style: TextStyle(
                           fontSize: 14,
-                          color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],

@@ -68,24 +68,22 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
-      backgroundColor: isDarkMode ? const Color(0xFF0A0A0F) : const Color(0xFFF5F5F5),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: isDarkMode ? const Color(0xFF1E1E2E) : Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
-            color: isDarkMode ? Colors.white : Colors.black,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           'Track Order',
           style: TextStyle(
-            color: isDarkMode ? Colors.white : Colors.black,
+            color: Theme.of(context).colorScheme.onSurface,
             fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
@@ -100,44 +98,44 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Restaurant Info Card
-              _buildRestaurantCard(isDarkMode),
+              _buildRestaurantCard(context),
               
               const SizedBox(height: 16),
               
               // Delivery Time Card
               if (_isActiveOrder(_currentOrder.status))
-                _buildDeliveryTimeCard(isDarkMode),
+                _buildDeliveryTimeCard(context),
               
               const SizedBox(height: 16),
               
               // Order Status Timeline
-              _buildOrderTimeline(isDarkMode),
+              _buildOrderTimeline(context),
               
               const SizedBox(height: 16),
               
               // Driver Info Card (only show when order is on the way or arriving soon)
               if (_currentOrder.status == 'on_the_way' || _currentOrder.status == 'arriving_soon')
-                _buildDriverCard(isDarkMode),
+                _buildDriverCard(context),
               
               const SizedBox(height: 16),
               
               // Order Items
-              _buildOrderItems(isDarkMode),
+              _buildOrderItems(context),
               
               const SizedBox(height: 16),
               
               // Delivery Address
-              _buildDeliveryAddress(isDarkMode),
+              _buildDeliveryAddress(context),
               
               const SizedBox(height: 16),
               
               // Payment Summary
-              _buildPaymentSummary(isDarkMode),
+              _buildPaymentSummary(context),
               
               const SizedBox(height: 24),
               
               // Action Buttons
-              _buildActionButtons(isDarkMode),
+              _buildActionButtons(context),
               
               const SizedBox(height: 16),
             ],
@@ -147,11 +145,11 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     );
   }
 
-  Widget _buildRestaurantCard(bool isDarkMode) {
+  Widget _buildRestaurantCard(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDarkMode ? const Color(0xFF1E1E2E) : Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -186,7 +184,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: isDarkMode ? Colors.white : Colors.black,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -194,7 +192,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                   'Order #${_currentOrder.orderNumber}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -202,7 +200,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                   DateFormat('MMM dd, yyyy • hh:mm a').format(_currentOrder.createdAt),
                   style: TextStyle(
                     fontSize: 11,
-                    color: isDarkMode ? Colors.grey[500] : Colors.grey[500],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.8),
                   ),
                 ),
               ],
@@ -213,7 +211,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     );
   }
 
-  Widget _buildDeliveryTimeCard(bool isDarkMode) {
+  Widget _buildDeliveryTimeCard(BuildContext context) {
     final now = DateTime.now();
     final estimatedTime = _currentOrder.estimatedDeliveryTime;
     final difference = estimatedTime.difference(now);
@@ -284,14 +282,14 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     );
   }
 
-  Widget _buildOrderTimeline(bool isDarkMode) {
+  Widget _buildOrderTimeline(BuildContext context) {
     final steps = _getOrderSteps();
     final currentStepIndex = _getCurrentStepIndex();
 
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: isDarkMode ? const Color(0xFF1E1E2E) : Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -309,7 +307,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: isDarkMode ? Colors.white : Colors.black,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 20),
@@ -319,14 +317,14 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
             final isCurrent = index == currentStepIndex;
             final isLast = index == steps.length - 1;
 
-            return _buildTimelineStep(
+            return _buildTimelineStep(context, 
               icon: step['icon'] as IconData,
               title: step['title'] as String,
               subtitle: step['subtitle'] as String,
               isCompleted: isCompleted,
               isCurrent: isCurrent,
               isLast: isLast,
-              isDarkMode: isDarkMode,
+              
             );
           }),
         ],
@@ -398,14 +396,14 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     }
   }
 
-  Widget _buildTimelineStep({
+  Widget _buildTimelineStep(context, BuildContext context, {
     required IconData icon,
     required String title,
     required String subtitle,
     required bool isCompleted,
     required bool isCurrent,
     required bool isLast,
-    required bool isDarkMode,
+    
   }) {
     final isCancelled = _currentOrder.status == 'cancelled' && title == 'Order Cancelled';
     
@@ -420,14 +418,14 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
               decoration: BoxDecoration(
                 color: isCompleted || isCurrent
                     ? (isCancelled ? Colors.red : AppColors.primary)
-                    : (isDarkMode ? Colors.grey[800] : Colors.grey[200]),
+                    : Theme.of(context).colorScheme.surfaceContainerHighest,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 isCompleted ? Icons.check : icon,
                 color: isCompleted || isCurrent
                     ? Colors.white
-                    : (isDarkMode ? Colors.grey[600] : Colors.grey[400]),
+                    : Theme.of(context).colorScheme.onSurfaceVariant,
                 size: 20,
               ),
             ),
@@ -438,7 +436,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                 margin: const EdgeInsets.symmetric(vertical: 4),
                 color: isCompleted
                     ? AppColors.primary.withValues(alpha: 0.5)
-                    : (isDarkMode ? Colors.grey[800] : Colors.grey[300]),
+                    : Theme.of(context).colorScheme.outlineVariant,
               ),
           ],
         ),
@@ -455,8 +453,8 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                     fontSize: 14,
                     fontWeight: isCurrent ? FontWeight.bold : FontWeight.w600,
                     color: isCompleted || isCurrent
-                        ? (isDarkMode ? Colors.white : Colors.black)
-                        : (isDarkMode ? Colors.grey[600] : Colors.grey[500]),
+                        ? Theme.of(context).colorScheme.onSurface
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -464,7 +462,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                   subtitle,
                   style: TextStyle(
                     fontSize: 12,
-                    color: isDarkMode ? Colors.grey[500] : Colors.grey[600],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.8),
                   ),
                 ),
               ],
@@ -475,13 +473,13 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     );
   }
 
-  Widget _buildDriverCard(bool isDarkMode) {
+  Widget _buildDriverCard(BuildContext context) {
     final driverName = _currentOrder.driverName ?? 'Driver';
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDarkMode ? const Color(0xFF1E1E2E) : Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -521,7 +519,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: isDarkMode ? Colors.white : Colors.black,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -529,7 +527,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                   'Courier',
                   style: TextStyle(
                     fontSize: 12,
-                    color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -552,11 +550,11 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     );
   }
 
-  Widget _buildOrderItems(bool isDarkMode) {
+  Widget _buildOrderItems(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDarkMode ? const Color(0xFF1E1E2E) : Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -574,7 +572,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: isDarkMode ? Colors.white : Colors.black,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 16),
@@ -609,7 +607,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                       item.name,
                       style: TextStyle(
                         fontSize: 14,
-                        color: isDarkMode ? Colors.white : Colors.black,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -618,7 +616,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
-                      color: isDarkMode ? Colors.white : Colors.black,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
                 ],
@@ -630,11 +628,11 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     );
   }
 
-  Widget _buildDeliveryAddress(bool isDarkMode) {
+  Widget _buildDeliveryAddress(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDarkMode ? const Color(0xFF1E1E2E) : Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -652,7 +650,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: isDarkMode ? Colors.white : Colors.black,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 12),
@@ -678,7 +676,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                   'Building 24, Academic Belt Road, Dhahran 31261',
                   style: TextStyle(
                     fontSize: 14,
-                    color: isDarkMode ? Colors.grey[300] : Colors.grey[700],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ),
@@ -689,11 +687,11 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     );
   }
 
-  Widget _buildPaymentSummary(bool isDarkMode) {
+  Widget _buildPaymentSummary(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDarkMode ? const Color(0xFF1E1E2E) : Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
@@ -711,17 +709,17 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: isDarkMode ? Colors.white : Colors.black,
+              color: Theme.of(context).colorScheme.onSurface,
             ),
           ),
           const SizedBox(height: 16),
-          _buildSummaryRow('Subtotal', _currentOrder.subtotal, isDarkMode),
+          _buildSummaryRow(context, 'Subtotal', _currentOrder.subtotal),
           const SizedBox(height: 8),
-          _buildSummaryRow('Delivery Fee', _currentOrder.deliveryFee, isDarkMode),
+          _buildSummaryRow(context, 'Delivery Fee', _currentOrder.deliveryFee),
           const SizedBox(height: 8),
-          _buildSummaryRow('Tax', _currentOrder.tax, isDarkMode),
+          _buildSummaryRow(context, 'Tax', _currentOrder.tax),
           const SizedBox(height: 12),
-          Divider(color: isDarkMode ? Colors.grey[800] : Colors.grey[300]),
+          Divider(color: Theme.of(context).colorScheme.outlineVariant),
           const SizedBox(height: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -731,7 +729,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
-                  color: isDarkMode ? Colors.white : Colors.black,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               Text(
@@ -748,7 +746,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: isDarkMode ? const Color(0xFF2A2A3E) : const Color(0xFFF5F5F5),
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(8),
             ),
             child: Row(
@@ -764,7 +762,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: isDarkMode ? Colors.white : Colors.black,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ],
@@ -775,7 +773,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     );
   }
 
-  Widget _buildSummaryRow(String label, double amount, bool isDarkMode) {
+  Widget _buildSummaryRow(BuildContext context, String label, double amount) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -783,7 +781,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
           label,
           style: TextStyle(
             fontSize: 14,
-            color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         Text(
@@ -791,7 +789,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: isDarkMode ? Colors.white : Colors.black,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ],
@@ -822,7 +820,7 @@ class _OrderTrackingScreenState extends State<OrderTrackingScreen> {
     }
   }
 
-  Widget _buildActionButtons(bool isDarkMode) {
+  Widget _buildActionButtons(BuildContext context) {
     if (_currentOrder.status == 'cancelled') {
       return SizedBox(
         width: double.infinity,

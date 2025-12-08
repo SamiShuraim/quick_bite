@@ -123,12 +123,10 @@ class _AddCardScreenState extends State<AddCardScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
     return Scaffold(
-      backgroundColor: isDarkMode ? const Color(0xFF0A0A0F) : Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: isDarkMode ? const Color(0xFF0A0A0F) : Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         leading: Row(
           children: [
@@ -177,7 +175,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -189,16 +187,16 @@ class _AddCardScreenState extends State<AddCardScreen> {
                 keyboardType: TextInputType.name,
                 onChanged: (value) => setState(() {}),
                 style: TextStyle(
-                  color: isDarkMode ? Colors.white : Colors.black,
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontSize: 16,
                 ),
                 decoration: InputDecoration(
                   hintText: 'Vipul Khadse',
                   hintStyle: TextStyle(
-                    color: isDarkMode ? Colors.grey[600] : Colors.grey[400],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.6),
                   ),
                   filled: true,
-                  fillColor: isDarkMode ? const Color(0xFF1E1E2E) : const Color(0xFFF5F5F5),
+                  fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -224,7 +222,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
-                  color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -239,16 +237,16 @@ class _AddCardScreenState extends State<AddCardScreen> {
                 ],
                 onChanged: (value) => setState(() {}),
                 style: TextStyle(
-                  color: isDarkMode ? Colors.white : Colors.black,
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontSize: 16,
                 ),
                 decoration: InputDecoration(
                   hintText: '2134 ____ ____ ____',
                   hintStyle: TextStyle(
-                    color: isDarkMode ? Colors.grey[600] : Colors.grey[400],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.6),
                   ),
                   filled: true,
-                  fillColor: isDarkMode ? const Color(0xFF1E1E2E) : const Color(0xFFF5F5F5),
+                  fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
@@ -280,7 +278,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
-                            color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                             letterSpacing: 0.5,
                           ),
                         ),
@@ -295,16 +293,16 @@ class _AddCardScreenState extends State<AddCardScreen> {
                           ],
                           onChanged: (value) => setState(() {}),
                           style: TextStyle(
-                            color: isDarkMode ? Colors.white : Colors.black,
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontSize: 16,
                           ),
                           decoration: InputDecoration(
                             hintText: '12/2027',
                             hintStyle: TextStyle(
-                              color: isDarkMode ? Colors.grey[600] : Colors.grey[400],
+                              color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.6),
                             ),
                             filled: true,
-                            fillColor: isDarkMode ? const Color(0xFF1E1E2E) : const Color(0xFFF5F5F5),
+                            fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
@@ -334,7 +332,7 @@ class _AddCardScreenState extends State<AddCardScreen> {
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
-                            color: isDarkMode ? Colors.grey[400] : Colors.grey[600],
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                             letterSpacing: 0.5,
                           ),
                         ),
@@ -349,16 +347,16 @@ class _AddCardScreenState extends State<AddCardScreen> {
                           ],
                           onChanged: (value) => setState(() {}),
                           style: TextStyle(
-                            color: isDarkMode ? Colors.white : Colors.black,
+                            color: Theme.of(context).colorScheme.onSurface,
                             fontSize: 16,
                           ),
                           decoration: InputDecoration(
                             hintText: '•••',
                             hintStyle: TextStyle(
-                              color: isDarkMode ? Colors.grey[600] : Colors.grey[400],
+                              color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.6),
                             ),
                             filled: true,
-                            fillColor: isDarkMode ? const Color(0xFF1E1E2E) : const Color(0xFFF5F5F5),
+                            fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
                               borderSide: BorderSide.none,
