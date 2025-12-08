@@ -15,45 +15,33 @@ QuickBite is a modern food delivery mobile application built with Flutter for th
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### Running the Application
 
-Before you begin, ensure you have Flutter installed:
-- **Flutter SDK**: Version 3.9.0 or higher
-- **Dart SDK**: Version 3.9.0 or higher
+1. **Unzip the project folder**
 
-To check if Flutter is installed:
-```bash
-flutter --version
-```
-
-If not installed, follow the [official Flutter installation guide](https://docs.flutter.dev/get-started/install).
-
-### Installation & Running
-
-1. **Clone the repository**
+2. **Open terminal and navigate to the project:**
    ```bash
-   git clone https://github.com/SamiShuraim/quick_bite.git
-   cd quick_bite
+   cd path/to/quick_bite
    ```
 
-2. **Install dependencies**
+3. **Install dependencies:**
    ```bash
    flutter pub get
    ```
 
-3. **Run the application**
+4. **Run the app:**
    ```bash
    flutter run
    ```
 
-That's it! The app will start and connect to our deployed backend automatically.
+That's it! The app will connect to our deployed backend automatically.
 
-> **Note**: On first launch, the app may show a loading screen for about 30-60 seconds. This is because our backend runs on free cloud hosting (Render.com) which spins down after inactivity. The app will automatically wait for the server to start and then proceed normally.
+> **Note**: On first launch, you may see a loading screen for 30-60 seconds while the backend server wakes up (free hosting). The app will proceed automatically.
 
 ### Test Account
 
-When you first open the app, you'll see a test account dialog with pre-filled credentials:
-Feel free to use this account or create your own!
+When you open the app, you'll see a test account dialog with pre-filled credentials.
+
 
 ## 🧪 Testing
 
@@ -101,3 +89,9 @@ test/
 ├── widget/                 # Widget tests
 └── integration/            # Integration tests
 ```
+
+## 👥 Course Information
+
+**Course:** SWE 463 - Mobile Application Development  
+**Institution:** King Fahd University of Petroleum & Minerals (KFUPM)  
+**Semester:** Fall 2024
