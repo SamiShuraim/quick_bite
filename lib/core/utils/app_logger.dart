@@ -16,7 +16,7 @@ class AppLogger {
   AppLogger._();
 
   static const String _prefix = '🍔 QuickBite';
-  static const bool _enableLogging = true; // Set to false in production
+  static const bool _enableLogging = false; // Set to false in production
 
   /// Log debug information
   static void debug(String message, {String? tag, Object? data}) {
